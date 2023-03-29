@@ -3,8 +3,6 @@
 #include <string>
 using namespace std;
 
-// G:\Code\Github\2042-Project\src\BookList.csv
-// G:\Code\Github\2042-Project\src\BorrowerList.csv
 void mainMenu();
 void manageBookMenu();
 
@@ -194,12 +192,11 @@ void manageBookMenu()
 	cout << "Option (1 - 5): ";
 
 	cin >> option;
-	manageBookController(option);
+	manageBookOptionController(option);
 }
 
 int main()
 {
-	int option;
 	importFile();
 	mainMenu();
 	return 0;
