@@ -6,6 +6,20 @@ using namespace std;
 void mainMenu();
 void manageBookMenu();
 
+// class BookList()
+// {
+// public:
+// 	BookList();
+// 	void displayBookList();
+// 	void searchBook();
+// 	void addBook();
+// 	void removeBook();
+// }
+
+// class BorrowerList()
+// {
+// }
+
 int extractFields(string line, char fields[][101])
 {
 	/*
@@ -15,12 +29,26 @@ int extractFields(string line, char fields[][101])
 	 *	3. Copy the content char into 2D array fields
 	 *	4. Count the number of fields
 	 */
-	int numFields = 0;
+	int numFields = 0, i = 0, j = 0;
 
-	// **********
-	// Implement your code to extract fields from the line
-	// **********
-	cout << line << endl; // *** show the line content, for you to know what it reads
+	while (i < line.length())
+	{
+		if (line[i] == ',' || line[i] == '\"')
+		{
+			fields[numFields][j] = '\0';
+			numFields++;
+			j = 0;
+		}
+		else
+		{
+			fields[numFields][j] = line[i];
+			j++;
+		}
+		i++;
+	}
+
+	fields[numFields][j] = '\0';
+	numFields++;
 
 	return numFields;
 }
@@ -65,10 +93,10 @@ void importFile()
 	cin >> isImport;
 	if (isImport == 'Y')
 	{
+		cin.ignore();
 		cout << "Path of book list file: ";
-		cin >> filename;
 		getline(cin, filename); // Path with space is allowed
-		cout << "Importing book list . . . ";
+		cout << "Importing book list . . . " << filename;
 		readCSV(filename);
 		cout << "Done" << endl;
 
@@ -198,6 +226,11 @@ void manageBookMenu()
 int main()
 {
 	importFile();
-	mainMenu();
+	// mainMenu();
+	// string filename;
+
+	// cout << "Input path to CSV file: ";
+	// getline(cin, filename); // Path with space is allowed
+	// readCSV(filename);
 	return 0;
 }
