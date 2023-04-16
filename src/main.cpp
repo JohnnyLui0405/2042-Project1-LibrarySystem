@@ -3,39 +3,22 @@
 #include <string>
 using namespace std;
 
-class 
 void mainMenu();
 void manageBookMenu();
-void manageBorrowerMenu();
-void borrowBooksMenu();
-void returnBooksMenu();
 
-class BookList
-{
-public:
-	BookList();
- 	void displayBookList();
-	void searchBook();
-	void addBook();
-	void removeBook();
-	void back();
-private:
-int ID, Bookdetails, availability;
-}
+// class BookList()
+// {
+// public:
+// 	BookList();
+// 	void displayBookList();
+// 	void searchBook();
+// 	void addBook();
+// 	void removeBook();
+// }
 
-class BorrowerList
-{
-public:
-	BorrowerList()
-	void displayBorrowerList();
-	void serachBook();
-	void addBorrower();
-	void removeBorrower();
-	void back()
-private:
-int ID, Name, Contactnumber, Numberofbooksborrowed;
- }
-
+// class BorrowerList()
+// {
+// }
 
 int extractFields(string line, char fields[][101])
 {
@@ -155,15 +138,13 @@ void mainOptionController(int option)
 	{
 	case 1:
 		// Manage books
-		manageBookMenu()
+		manageBookMenu();
 		break;
 	case 2:
 		// Manage borrowers
-		manageBorrowerMenu()
 		break;
 	case 3:
 		// Borrow book(s)
-
 		break;
 	case 4:
 		// Return book(s)
@@ -189,53 +170,18 @@ void manageBookOptionController(int option)
 	{
 	case 1:
 		// Display books
-		BookList.displayBooklist()
 		break;
 	case 2:
 		// Search book
-		BookList.searchBook()
 		break;
 	case 3:
 		// Add book
-		BookList.addBook()
 		break;
 	case 4:
 		// Remove book
-		BookList.removeBook()
 		break;
 	case 5:
 		// Back
-		BookList.back()
-		break;
-	default:
-		// Invalid input
-		break;
-	}
-}
-
-void manageBorrowersOptionController(int option)
-{
-	switch (option)
-	{
-	case 1:
-		// Display borrowers
-		BorrowerList.displayBooklist()
-		break;
-	case 2:
-		// Add borrowers
-		BorrowerList.searchBorrower()
-		break;
-	case 3:
-		// Add book
-		BorrowerList.addBorrower()
-		break;
-	case 4:
-		// Remove book
-		BorrowerList.removeBorrower()
-		break;
-	case 5:
-		// Back
-		BorrowerList.back()
 		break;
 	default:
 		// Invalid input
@@ -276,26 +222,6 @@ void manageBookMenu()
 	cin >> option;
 	manageBookOptionController(option);
 }
-
-void manageBorrowerMenu()
-{
-	int option;
-	cout << "*** Manage Borrowers ***" << endl;
-	cout << "[1] Display borrowers" << endl;
-	cout << "[2] Search borrower" << endl;
-	cout << "[3] Add borrower" << endl;
-	cout << "[4] Remove borrower" << endl;
-	cout << "[5] Back" << endl;
-	cout << "********************" << endl;
-	cout << "Option (1 - 5): ";
-
-	cin >> option;
-	manageBookOptionController(option);
-}
-
-
-void returnBooksMenu();
-
 
 int main()
 {
