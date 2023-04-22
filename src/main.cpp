@@ -55,7 +55,7 @@ public:
 	string borrowerID;
 	string lastName;
 	string firstName;
-	string contractNum;
+	string contactNum;
 };
 
 class Library
@@ -64,7 +64,7 @@ public:
 	int numBooks;
 	Book bookList[1000];
 	int numBorrowers;
-	Borrower borrowerList[1000];
+	Borrower borrowerList[500];
 
 	Library()
 	{
@@ -217,12 +217,12 @@ public:
 		addBook(ID, title, author, publisher, to_string(year));
 	}
 
-	void addBorrower(string lastName, string firstName, string contractNum)
+	void addBorrower(string lastName, string firstName, string contactNum)
 	{
 		Borrower borrower;
 		borrower.lastName = lastName;
 		borrower.firstName = firstName;
-		borrower.contractNum = contractNum;
+		borrower.contactNum = contactNum;
 		borrowerList[numBorrowers] = borrower;
 		numBorrowers++;
 		cout << "Borrower added" << borrower.borrowerID << endl;
@@ -493,6 +493,71 @@ void manageBooks()
 	manageBooks();
 }
 
+void borrowBooks(){
+	string borrowerID;
+	string valid = "HKCC";
+	string bookID;
+	bool flag = true;
+	cout << "*************************************Borrow Book(s)****************************************" << endl;
+	cout << "To borrow book(s), you should provide the following details: " << endl;
+	cout << "Borrower ID" << endl;
+	cout << "Book ID" << endl;
+	cout << "You can borrow at most 5 books." << endl;
+	cout << "If the quota is used up, you cannot borrow more books until some books have been returned." << endl;
+	cout << "*******************************************************************************************" << endl;
+
+	while (flag = true){
+		cout << "Enter Borrower ID: ";
+		getline(cin, borrowerID);
+		if ((borrowerID.size() != 8) ){
+			cout << "Invalid Borrower ID length. Please enter again." << endl;
+		}
+		else if (borrowerID.substr(0,4) != valid.substr(0,4)){
+			cout << "Invalid Borrower ID format. Please enter again." << endl;
+		}
+		// else {
+			// find borrower ID
+			// if (not found){
+				// cout << "Borrower ID not found. Please enter again." << endl;
+			// else flag = false;
+		// }
+	}
+	
+	// if (){
+		// check quota
+	// }
+	// else {
+		// cout << "Out of quota." << endl;
+		// break;
+	// }
+	
+
+	flag = true;
+	while (flag = true){
+		cout << "Enter Book ID (enter N/n when finish input): ";
+		if ((bookID == "N") || (bookID == "n")){
+			cout << "End of Book ID input." << endl;
+			break;
+		}
+		else if (bookID.size() > 10)
+			cout << "Invalid Book ID length. Please enter again." << endl;
+		// else if (){
+			// search book ID
+		// }
+		// else {
+			// update book availability
+			// quota++
+		// }
+		// if (out of quota){
+			// cout << "Out of quota." << endl;
+			// flag = false;
+		// }
+	}
+
+	cout << "End of borrowing process. Back to main menu." << endl;
+	mainMenu();
+}
+
 void mainMenu()
 {
 	int option;
@@ -525,6 +590,7 @@ void mainMenu()
 		break;
 	case 3:
 		// Borrow book(s)
+		borrowBooks();
 		break;
 	case 4:
 		// Return book(s)
