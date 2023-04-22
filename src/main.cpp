@@ -217,17 +217,6 @@ public:
 		addBook(ID, title, author, publisher, to_string(year));
 	}
 
-	void addBorrower(string lastName, string firstName, string contactNum)
-	{
-		Borrower borrower;
-		borrower.lastName = lastName;
-		borrower.firstName = firstName;
-		borrower.contactNum = contactNum;
-		borrowerList[numBorrowers] = borrower;
-		numBorrowers++;
-		cout << "Borrower added" << borrower.borrowerID << endl;
-	}
-
 	void displayBooks()
 	{
 		sortBookList();
@@ -311,6 +300,234 @@ public:
 			}
 		}
 	}
+
+	void sortBorrowerList()
+	{
+		sort(borrowerList, borrowerList + numBorrowers, [](Borrower a, Borrower b)
+			 { return a.lastName < b.lastName; });
+	}
+
+	void addBorrower(string lastName, string firstName, string contactNum)
+	{
+		Borrower borrower;
+		borrower.lastName = lastName;
+		borrower.firstName = firstName;
+		borrower.contactNum = contactNum;
+		borrowerList[numBorrowers] = borrower;
+		numBorrowers++;
+		cout << "Borrower added" << borrower.borrowerID << endl;
+	}
+
+	void displayBorrowers()
+	{
+		sortBookList();
+		size_t headerWidth[5] = {13, 103, 53, 53, 10};
+		cout << left << setw(headerWidth[0]) << "ID"
+			 << setw(headerWidth[1]) << "Book Details"
+			 << setw(headerWidth[4]) << "Availibility" << endl;
+		for (int i = 0; i < numBooks; i++)
+		{
+			string isAvailableText = bookList[i].isAvailable ? "Yes" : "No";
+			cout << left << setw(headerWidth[0]) << bookList[i].ID
+				 << setw(headerWidth[1]) << bookList[i].title
+				 << setw(10) << isAvailableText << endl;
+			cout << setw(headerWidth[0]) << ""
+				 << setw(headerWidth[1]) << bookList[i].author
+				 << setw(headerWidth[4]) << ""
+				 << "\n"
+				 << setw(headerWidth[0]) << ""
+				 << setw(headerWidth[1]) << bookList[i].publisher + "(" + bookList[i].year + ")"
+				 << endl;
+		}
+	}
+
+	void searchBorrower()
+	{
+		string keyword;
+		cin.ignore();
+		cout << "Enter keyword: ";
+		getline(cin, keyword);
+		if (keyword.size() > 50)
+		{
+			cout << "Only string with maximum 50 characters is allowed" << endl;
+			return;
+		}
+
+		int numKeywords = 0;
+		string *keywords = split(keyword, ' ', &numKeywords);
+
+		sortBookList();
+		size_t headerWidth[5] = {13, 103, 53, 53, 10};
+		cout << left << setw(headerWidth[0]) << "ID"
+			 << setw(headerWidth[1]) << "Book Details"
+			 << setw(headerWidth[4]) << "Availibility" << endl;
+		for (int i = 0; i < numBooks; i++)
+		{
+			string title = bookList[i].title;
+			string author = bookList[i].author;
+			string publisher = bookList[i].publisher;
+			string ID = bookList[i].ID;
+
+			for (int j = 0; j < numKeywords; j++)
+			{
+				if (keywords[j][0] == '"' && keywords[j][keywords[j].size() - 1] == '"')
+				{
+					keywords[j] = keywords[j].substr(1, keywords[j].size() - 2);
+				}
+				else
+				{
+					transform(title.begin(), title.end(), title.begin(), ::tolower);
+					transform(author.begin(), author.end(), author.begin(), ::tolower);
+					transform(publisher.begin(), publisher.end(), publisher.begin(), ::tolower);
+					transform(ID.begin(), ID.end(), ID.begin(), ::tolower);
+					transform(keywords[j].begin(), keywords[j].end(), keywords[j].begin(), ::tolower);
+				}
+
+				if (title.find(keywords[j]) != string::npos || author.find(keywords[j]) != string::npos || publisher.find(keywords[j]) != string::npos || ID.find(keywords[j]) != string::npos)
+				{
+					string isAvailableText = bookList[i].isAvailable ? "Yes" : "No";
+					cout << left << setw(headerWidth[0]) << bookList[i].ID
+						 << setw(headerWidth[1]) << bookList[i].title
+						 << setw(10) << isAvailableText << endl;
+					cout << setw(headerWidth[0]) << ""
+						 << setw(headerWidth[1]) << bookList[i].author
+						 << setw(headerWidth[4]) << ""
+						 << "\n"
+						 << setw(headerWidth[0]) << ""
+						 << setw(headerWidth[1]) << bookList[i].publisher + "(" + bookList[i].year + ")"
+						 << endl;
+					break;
+				}
+			}
+		}
+	}
+
+	void addBorrowerByUser()
+	{
+		string ID, title, author, publisher;
+		int year;
+		cout << "=====================================================================================================" << endl;
+		cout << "To add a book to the system, the you needs to provide the following details :" << endl;
+		cout << "-ID(a string with maximum 10 characters, has to be unique)" << endl;
+		cout << "-Title(a string with maximum 100 characters)" << endl;
+		cout << "-Author(a string with maximum 50 characters, may contains multiple names separated by semi-colon ‘;’)" << endl;
+		cout << "-Publisher(a string with maximum 50 characters)" << endl;
+		cout << "-Year(a positive integer)" << endl;
+		cout << "=====================================================================================================" << endl;
+
+		cout
+			<< "Enter book ID: ";
+		cin >> ID;
+		if (ID.size() > 10)
+		{
+			cout << "Only string with maximum 10 characters is allowed" << endl;
+			return;
+		}
+		for (int i = 0; i < numBooks; i++)
+		{
+			if (bookList[i].ID == ID)
+			{
+				cout << "Book ID already exists" << endl;
+				return;
+			}
+		}
+
+		cout << "Enter book title: ";
+		cin.ignore();
+		getline(cin, title);
+		if (title.size() > 100)
+		{
+			cout << "Only string with maximum 100 characters is allowed" << endl;
+			return;
+		}
+
+		cout << "Enter book author: ";
+		getline(cin, author);
+		if (author.size() > 50)
+		{
+			cout << "Only string with maximum 50 characters is allowed" << endl;
+			return;
+		}
+
+		cout << "Enter book publisher: ";
+		getline(cin, publisher);
+		if (publisher.size() > 50)
+		{
+			cout << "Only string with maximum 50 characters is allowed" << endl;
+			return;
+		}
+
+		cout << "Enter book year: ";
+		cin >> year;
+		if (cin.fail())
+		{						   // check whether last input was failed
+			cin.clear();		   // Reset the input error status to no error
+			cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+								   // or reached the end of line.
+		}
+		if (year <= 0)
+		{
+			cout << "Only positive integer is allowed" << endl;
+			return;
+		}
+		addBook(ID, title, author, publisher, to_string(year));
+	}
+
+	void removeBorrowerByUser()
+	{
+		string ID;
+		cout << "Enter book ID: ";
+		cin >> ID;
+		for (int i = 0; i < numBooks; i++)
+		{
+			if (bookList[i].ID == ID && bookList[i].isAvailable)
+			{
+				size_t headerWidth[5] = {13, 103, 53, 53, 10};
+				string isAvailableText = bookList[i].isAvailable ? "Yes" : "No";
+				cout << left << setw(headerWidth[0]) << "ID"
+					 << setw(headerWidth[1]) << "Book Details"
+					 << setw(headerWidth[4]) << "Availibility" << endl;
+				cout << left << setw(headerWidth[0]) << bookList[i].ID
+					 << setw(headerWidth[1]) << bookList[i].title
+					 << setw(10) << isAvailableText << endl;
+				cout << setw(headerWidth[0]) << ""
+					 << setw(headerWidth[1]) << bookList[i].author
+					 << setw(headerWidth[4]) << ""
+					 << "\n"
+					 << setw(headerWidth[0]) << ""
+					 << setw(headerWidth[1]) << bookList[i].publisher + "(" + bookList[i].year + ")"
+					 << endl;
+				cout << "Are you sure you want to remove this book? (Y/N): ";
+				string choice;
+				cin >> choice;
+				if (choice == "Y" || choice == "y")
+				{
+					for (int j = i; j < numBooks - 1; j++)
+					{
+						bookList[j] = bookList[j + 1];
+					}
+					numBooks--;
+					cout << "Book removed" << endl;
+					return;
+				}
+				else
+				{
+					cout << "Book not removed" << endl;
+					return;
+				}
+
+				// for (int j = i; j < numBooks - 1; j++)
+				// {
+				// 	bookList[j] = bookList[j + 1];
+				// }
+				// numBooks--;
+				// cout << "Book removed" << endl;
+				// return;
+			}
+		}
+		cout << "Book not found or not available" << endl;
+	}
+
 };
 
 Library library;
@@ -445,6 +662,54 @@ void importFile()
 	}
 }
 
+void manageBorrowers()
+{
+	int option;
+	cout << "*** Manage Books ***" << endl;
+	cout << "[1] Display borrowers" << endl;
+	cout << "[2] Search borrower" << endl;
+	cout << "[3] Add borrower" << endl;
+	cout << "[4] Remove borrower" << endl;
+	cout << "[5] Back" << endl;
+	cout << "*******************" << endl;
+	cout << "Option (1 - 5): ";
+
+	cin >> option;
+	if (cin.fail())
+	{						   // check whether last input was failed
+		cin.clear();		   // Reset the input error status to no error
+		cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+							   // or reached the end of line.
+	}
+	switch (option)
+	{
+	case 1:
+		// Display books
+		library.displayBorrowers();
+		break;
+	case 2:
+		// Search book
+		library.searchBorrower();
+		break;
+	case 3:
+		// Add book
+		library.addBorrowerByUser();
+		break;
+	case 4:
+		// Remove book
+		library.removeBorrowerByUser();
+		break;
+	case 5:
+		// Back
+		return;
+		break;
+	default:
+		cout << "Invalid input" << endl;
+		break;
+	}
+	manageBorrowers();
+}
+
 void manageBooks()
 {
 	int option;
@@ -490,7 +755,7 @@ void manageBooks()
 		cout << "Invalid input" << endl;
 		break;
 	}
-	manageBooks();
+	manageBorrowers();
 }
 
 void borrowBooks(){
@@ -592,6 +857,7 @@ void mainMenu()
 		break;
 	case 2:
 		// Manage borrowers
+		manageBorrowers();
 		break;
 	case 3:
 		// Borrow book(s)
