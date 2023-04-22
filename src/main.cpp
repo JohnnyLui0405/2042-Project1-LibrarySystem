@@ -519,6 +519,7 @@ void borrowBooks(){
 			// find borrower ID
 			// if (not found){
 				// cout << "Borrower ID not found. Please enter again." << endl;
+			// }
 			// else flag = false;
 		// }
 	}
@@ -535,18 +536,22 @@ void borrowBooks(){
 	flag = true;
 	while (flag = true){
 		cout << "Enter Book ID (enter N/n when finish input): ";
+		getline(cin,bookID);
 		if ((bookID == "N") || (bookID == "n")){
 			cout << "End of Book ID input." << endl;
+			flag = false;
 			break;
 		}
-		else if (bookID.size() > 10)
+		else if (bookID.size() > 10){
 			cout << "Invalid Book ID length. Please enter again." << endl;
-		// else if (){
-			// search book ID
-		// }
+		}
 		// else {
-			// update book availability
-			// quota++
+			// search book ID
+			// if (found){
+				// update book availability
+				// quota++
+				// break;
+			// }
 		// }
 		// if (out of quota){
 			// cout << "Out of quota." << endl;
