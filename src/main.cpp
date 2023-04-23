@@ -240,6 +240,20 @@ public:
 		return false;
 	}
 
+	bool validateBook(string bookID)
+	{
+		for (int i = 0; i < numBooks; i++)
+		{
+			if (bookList[i].ID == bookID)
+			{
+				cout << "Book found." << endl;
+				return true;
+			}
+		}
+		cout << "Book not found." << endl;
+		return false;
+	}
+
 	void displayBooks()
 	{
 		//sortBookList();
@@ -831,14 +845,16 @@ void borrowBooks(){
 		else if (bookID.size() > 10){
 			cout << "Invalid Book ID length. Please enter again." << endl;
 		}
-		// else {
-			// search book ID
-			// if (found){
+		else {
+			if ((bookIDvalid.validateBook(bookID)) == false){
+				cout << "Please enter again." << endl;
+			}
+			else {
 				// update book availability
 				// quota++
 				// break;
-			// }
-		// }
+			}
+		}
 		// if (out of quota){
 			// cout << "Out of quota." << endl;
 			// flag = false;
@@ -846,18 +862,21 @@ void borrowBooks(){
 	}
 
 	cout << "End of borrowing process. Back to main menu." << endl;
-	borrowBooks();
+	return;
 }
 
 void membersList()
 {
-		cout << setw(15) << "Group #12" << setw(20) << "Member List" << endl;
-		cout << "Name:" << setw(20) << "HUNG Ho Yin" << setw(12) <<"22160123A" << setw(5) << "203C"<<endl;
-		cout << "Name:" << setw(20) << "KAN Wing Yi" << setw(12) << "22144320A" << setw(5) << "203C"<<endl;
-	    cout << "Name:" << setw(20) << "KU Ka Ho" << setw(12) << "22150222A" << setw(5) << "203A"<<endl;
-		cout << "Name:" << setw(20) << "LUI Chun Shing" << setw(12) << "22075684A" << setw(5) << "203D"<<endl;
-		cout << "Name:" << setw(20) << "*MAK Ka Wah Andrew" << setw(12) << "22079450A" << setw(5) << "203C"<<endl;
-		cout << "Name:" << setw(20) << "YUEN Kin Man" << setw(12) << "22153666A" << setw(5) << "203C"<<endl;
+	cout << "******************************************" << endl;
+	cout << setw(15) << "Group #12" << setw(20) << "Member List" << endl;
+	cout << "Name:" << setw(20) << "HUNG Ho Yin" << setw(12) <<"22160123A" << setw(5) << "203C"<<endl;
+	cout << "Name:" << setw(20) << "KAN Wing Yi" << setw(12) << "22144320A" << setw(5) << "203C"<<endl;
+	cout << "Name:" << setw(20) << "KU Ka Ho" << setw(12) << "22150222A" << setw(5) << "203A"<<endl;
+	cout << "Name:" << setw(20) << "LUI Chun Shing" << setw(12) << "22075684A" << setw(5) << "203D"<<endl;
+	cout << "Name:" << setw(20) << "*MAK Ka Wah Andrew" << setw(12) << "22079450A" << setw(5) << "203C"<<endl;
+	cout << "Name:" << setw(20) << "YUEN Kin Man" << setw(12) << "22153666A" << setw(5) << "203C"<<endl;
+	cout << "******************************************" << endl;
+	return;
 }
 
 void mainMenu()
