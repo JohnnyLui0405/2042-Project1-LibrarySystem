@@ -5,6 +5,7 @@
 #include <algorithm>
 using namespace std;
 
+void mainMenu();
 class Book
 {
 public:
@@ -56,6 +57,7 @@ public:
 	string lastName;
 	string firstName;
 	string contactNum;
+	string *borrowedBooks;
 	bool isAvailable;
 
 	Borrower()
@@ -221,6 +223,20 @@ public:
 			return;
 		}
 		addBook(ID, title, author, publisher, to_string(year));
+	}
+
+	bool validateBorrower(string borrowerID)
+	{
+		for (int i = 0; i < numBorrowers; i++)
+		{
+			if (borrowerList[i].borrowerID == borrowerID)
+			{
+				cout << "Borrower found" << endl;
+				return true;
+			}
+		}
+		cout << "Borrower not found" << endl;
+		return false;
 	}
 
 	void displayBooks()
@@ -709,6 +725,7 @@ void borrowBooks(){
 	string valid = "HKCC";
 	string bookID;
 	bool flag = true;
+	Library borrowerIDvalid, bookIDvalid;
 	cout << "*************************************Borrow Book(s)****************************************" << endl;
 	cout << "To borrow book(s), you should provide the following details: " << endl;
 	cout << "Borrower ID" << endl;
@@ -726,13 +743,13 @@ void borrowBooks(){
 		else if (borrowerID.substr(0,4) != valid.substr(0,4)){
 			cout << "Invalid Borrower ID format. Please enter again." << endl;
 		}
-		// else {
+		else {
 			// find borrower ID
-			// if (not found){
-				// cout << "Borrower ID not found. Please enter again." << endl;
-			// }
-			// else flag = false;
-		// }
+			if ((borrowerIDvalid.validateBorrower(borrowerID)) == false){
+				cout << "Borrower ID not found. Please enter again." << endl;
+			}
+			else flag = false;
+		}
 	}
 	
 	// if (){
@@ -776,12 +793,13 @@ void borrowBooks(){
 
 void membersList()
 {
-		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
-		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
-	    cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
-		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
-		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
-		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
+		cout << setw(15) << "Group #12" << setw(20) << "Member List" << endl;
+		cout << "Name:" << setw(20) << "HUNG Ho Yin" << setw(12) <<"22160123A" << setw(5) << "203C"<<endl;
+		cout << "Name:" << setw(20) << "KAN Wing Yi" << setw(12) << "22144320A" << setw(5) << "203C"<<endl;
+	    cout << "Name:" << setw(20) << "KU Ka Ho" << setw(12) << "22150222A" << setw(5) << "203A"<<endl;
+		cout << "Name:" << setw(20) << "LUI Chun Shing" << setw(12) << "22075684A" << setw(5) << "203D"<<endl;
+		cout << "Name:" << setw(20) << "*MAK Ka Wah Andrew" << setw(12) << "22079450A" << setw(5) << "203C"<<endl;
+		cout << "Name:" << setw(20) << "YUEN Kin Man" << setw(12) << "22153666A" << setw(5) << "203C"<<endl;
 }
 
 void mainMenu()
@@ -835,6 +853,7 @@ void mainMenu()
 		break;
 	default:
 		// Invalid input
+		cout << "Invalid input. Please enter again." << endl;
 		break;
 	}
 	mainMenu();
