@@ -473,13 +473,25 @@ void searchBorrower()
                }
         
               string borrowerID;
-              string hkcc="HKCC";
-              int a =0000+rand()%9999;
-              ostringstream oss;
-              oss << hkcc << a;
-              borrowerID=oss.str();
-              cout<<"Your borrowerID is "<<borrowerID<<endl;
-              borrowedBooks=0;
+              int numBorrowers;
+              borrowerID="HKCC"+to_string(numBorrowers);
+              if (borrowerID.size()==5)
+              {
+                 borrowerID="HKCC000"+to_string(numBorrowers);
+              }
+    
+              else if (borrowerID.size()==6)
+              {
+                 borrowerID="HKCC00"+to_string(numBorrowers);
+              }
+    
+              else if (borrowerID.size()==7)
+              {
+                 borrowerID="HKCC0"+to_string(numBorrowers);
+              }
+              numBorrowers++;
+              cout<<"Your borrowerID is "<<borrowerID;
+    
         
               addBorrower(lastName, firstName, contactNum)
 	}
