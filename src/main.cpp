@@ -3,6 +3,7 @@
 #include <fstream> // for file input/output
 #include <string>
 #include <algorithm>
+#include <sstream>
 using namespace std;
 
 void mainMenu();
