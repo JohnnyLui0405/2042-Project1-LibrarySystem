@@ -463,12 +463,12 @@ void searchBorrower()
               }
         
               cout << "Enter contactNumber: ";
-              getline(cin,contactNumber);
-              while(contactNumber.size()!=8)
+              getline(cin,contactNum);
+              while(contactNum.size()!=8)
                {
               cout<<"Only integer with an 8-digit number, begins with 2, 3, 5, 6, or 9 is allowed"<<endl;
               cout<<"Enter contactNumber: ";
-              getline(cin,contactNumber);
+              getline(cin,contactNum);
               continue;
                }
         
