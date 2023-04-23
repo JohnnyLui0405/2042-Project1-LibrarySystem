@@ -435,7 +435,52 @@ void searchBorrower()
 
 	void addBorrowerByUser()
 	{
+              string lastName, firstName, contactNum;
+              cout << "=====================================================================================================" << endl;
+              cout << "To add a borrower to the system, the you needs to provide the following details :" << endl;
+              cout << "-lastName(a string with maximum 10 characters, convert to UPPER case)" << endl;
+              cout << "-firstName(a string with maximum 30 characters, capitalize each word)" << endl;
+              cout << "-contactNumber(an 8-digit number, begins with 2, 3, 5, 6, or 9)" << endl;
+              cout << "=====================================================================================================" << endl;
 
+              cout << "Enter lastName: ";
+              cin >> lastName;
+              while (lastName.size() > 10)
+              {
+              cout << "Only string with maximum 10 characters is allowed" << endl;
+              cin >> lastName;
+              continue;
+              }
+        
+              cout << "Enter firstName: ";
+              cin >> firstName;
+              while(firstName.size() > 30)
+              {
+              cout << "Only string with maximum 30 characters is allowed" << endl;
+              cin >> firstName;
+              continue;
+              }
+        
+              cout << "Enter contactNumber: ";
+              getline(cin,contactNumber);
+              while(contactNumber.size()!=8)
+               {
+              cout<<"Only integer with an 8-digit number, begins with 2, 3, 5, 6, or 9 is allowed"<<endl;
+              cout<<"Enter contactNumber: ";
+              getline(cin,contactNumber);
+              continue;
+               }
+        
+              string borrowerID;
+              string hkcc="HKCC";
+              int a =0000+rand()%9999;
+              ostringstream oss;
+              oss << hkcc << a;
+              borrowerID=oss.str();
+              cout<<"Your borrowerID is "<<borrowerID<<endl;
+              borrowedBooks=0;
+        
+              addBorrower(lastName, firstName, contactNum)
 	}
 
 	void removeBorrowerByUser()
