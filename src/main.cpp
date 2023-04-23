@@ -493,7 +493,7 @@ void searchBorrower()
               cout<<"Your borrowerID is "<<borrowerID;
     
         
-              addBorrower(lastName, firstName, contactNum)
+              addBorrower(lastName, firstName, contactNum);
 	}
 
 	void removeBorrowerByUser()
