@@ -774,6 +774,16 @@ void borrowBooks(){
 	borrowBooks();
 }
 
+void membersList()
+{
+		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
+		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
+	    cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
+		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
+		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
+		cout << "Name      " << "Student ID     " << "class and tutorial group"<<endl;
+}
+
 void mainMenu()
 {
 	int option;
@@ -817,6 +827,7 @@ void mainMenu()
 		break;
 	case 6:
 		// Member List
+		membersList();
 		break;
 	case 7:
 		// Exit
