@@ -463,12 +463,12 @@ void searchBorrower()
 					return;
 				}
 
-				// for (int j = i; j < numBooks - 1; j++)
+				// for (int j = i; j < numBorrowers - 1; j++)
 				// {
-				// 	bookList[j] = bookList[j + 1];
+				// 	borrowersList[j] = borrowersList[j + 1];
 				// }
-				// numBooks--;
-				// cout << "Book removed" << endl;
+				// numBorrowers--;
+				// cout << "Borrower removed" << endl;
 				// return;
 			}
 		}
