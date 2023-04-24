@@ -553,7 +553,7 @@ public:
 		string valid = "HKCC";
 		string bookID;
 		bool flag = true;
-		cout << "*************************************Borrow Book(s)****************************************" << endl;
+		cout << "************************************ Borrow Book(s) ***************************************" << endl;
 		cout << "To borrow book(s), you should provide the following details: " << endl;
 		cout << "Borrower ID (HKCCXXXX e.g. HKCC0001)" << endl;
 		cout << "Book ID" << endl;
@@ -621,13 +621,12 @@ public:
 				int bookIndex = validateBook(bookID);
 				if (bookIndex == -1)
 				{
-					cout << "Please enter again." << endl;
+					cout << "Book ID not found. Please enter again." << endl;
 				}
 				else
 				{
 					// update book availability
-					// quota++
-					// break;
+					// number of books borrowed++
 					if (bookList[bookIndex].isAvailable)
 					{
 						borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
@@ -637,6 +636,7 @@ public:
 					}
 					else
 					{
+						cout << "This book has already been borrowed." << endl;
 					}
 				}
 			}
@@ -652,8 +652,8 @@ public:
 		string valid = "HKCC";
 		string bookID;
 		bool flag = true;
-		cout << "*************************************Borrow Book(s)****************************************" << endl;
-		cout << "To borrow book(s), you should provide the following details: " << endl;
+		cout << "************************************ Return Book(s) ***************************************" << endl;
+		cout << "To return book(s), you should provide the following details: " << endl;
 		cout << "Borrower ID (HKCCXXXX e.g. HKCC0001)" << endl;
 		cout << "Book ID" << endl;
 		cout << "You can borrow at most 5 books." << endl;
@@ -719,13 +719,12 @@ public:
 				int bookIndex = validateBook(bookID);
 				if (bookIndex == -1)
 				{
-					cout << "Please enter again." << endl;
+					cout << "Book ID not found. Please enter again." << endl;
 				}
 				else
 				{
 					// update book availability
-					// quota++
-					// break;
+					// number of books borrowed--
 					if (isBorrrwed(bookID, borrowerList[borrowerIndex]))
 					{
 						borrowerList[borrowerIndex].numBorrowedBooks--;
@@ -740,7 +739,7 @@ public:
 			}
 		}
 
-		cout << "End of borrowing process. Back to main menu." << endl;
+		cout << "End of returning process. Back to main menu." << endl;
 		return;
 	}
 };
@@ -987,6 +986,7 @@ void membersList()
 	cout << "Name:" << setw(20) << "*MAK Ka Wah Andrew" << setw(12) << "22079450A" << setw(5) << "203C" << endl;
 	cout << "Name:" << setw(20) << "YUEN Kin Man" << setw(12) << "22153666A" << setw(5) << "203C" << endl;
 	cout << "******************************************" << endl;
+	cout << "\nEnd of display. Back to main menu.\n";
 	return;
 }
 
