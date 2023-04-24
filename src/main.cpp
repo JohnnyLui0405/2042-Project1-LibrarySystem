@@ -6,23 +6,7 @@
 #include <sstream>
 using namespace std;
 
-void mainMenu();
-class Book
-{
-public:
-	string ID;
-	string title;
-	string author;
-	string publisher;
-	string year;
-	bool isAvailable;
-
-	Book()
-	{
-		isAvailable = true;
-	}
-};
-
+// Common functions
 string *split(string str, char del, int *numKeywords)
 {
 	string *keywords = new string[50];
@@ -51,19 +35,46 @@ string *split(string str, char del, int *numKeywords)
 	return keywords;
 }
 
+bool isExit(string input)
+{
+	return input == "exit" || input == "quit" || input == "q";
+}
+
+bool isValidContactNum(string contactNum)
+{
+	return (contactNum[0] == '2' || contactNum[0] == '3' || contactNum[0] == '5' || contactNum[0] == '6' || contactNum[0] == '9');
+}
+void mainMenu();
+class Book
+{
+public:
+	string ID;
+	string title;
+	string author;
+	string publisher;
+	string year;
+	bool isAvailable;
+
+	Book()
+	{
+		isAvailable = true;
+	}
+};
 class Borrower
 {
 public:
 	string borrowerID;
 	string lastName;
 	string firstName;
+	string fullName;
 	string contactNum;
-	string *borrowedBooks;
-	bool isAvailable;
+	Book *borrowedBooks;
+	int numBorrowedBooks;
 
 	Borrower()
 	{
-		isAvailable = true;
+		numBorrowedBooks = 0;
+		borrowedBooks = new Book[5];
 	}
 };
 
@@ -81,11 +92,17 @@ public:
 		numBorrowers = 0;
 	}
 
-	//void sortBookList()
-	//{
-		//sort(bookList, bookList + numBooks, [](Book a, Book b)
-			 //{ return a.title < b.title; });
-	//}
+	void sortBookList()
+	{
+		sort(bookList, bookList + numBooks, [](Book a, Book b)
+			 { return a.title < b.title; });
+	}
+
+	void sortBorrowerList()
+	{
+		sort(borrowerList, borrowerList + numBorrowers, [](Borrower a, Borrower b)
+			 { return a.fullName < b.fullName; });
+	}
 
 	void addBook(string ID, string title, string author, string publisher, string year)
 	{
@@ -226,37 +243,39 @@ public:
 		addBook(ID, title, author, publisher, to_string(year));
 	}
 
-	bool validateBorrower(string borrowerID)
+	int validateBorrower(string borrowerID, int low, int high)
 	{
-		for (int i = 0; i < numBorrowers; i++)
+		if (high >= low)
 		{
-			if (borrowerList[i].borrowerID == borrowerID)
-			{
-				cout << "Borrower found" << endl;
-				return true;
-			}
+			int mid = low + (high - low) / 2;
+
+			if (borrowerList[mid].borrowerID == borrowerID)
+				return mid;
+
+			if (borrowerList[mid].borrowerID > borrowerID)
+				return validateBorrower(borrowerID, low, mid - 1);
+
+			return validateBorrower(borrowerID, mid + 1, high);
 		}
-		cout << "Borrower not found" << endl;
-		return false;
+
+		return -1;
 	}
 
-	bool validateBook(string bookID)
+	int validateBook(string bookID)
 	{
 		for (int i = 0; i < numBooks; i++)
 		{
 			if (bookList[i].ID == bookID)
 			{
-				cout << "Book found." << endl;
-				return true;
+				return i;
 			}
 		}
-		cout << "Book not found." << endl;
-		return false;
+		return -1;
 	}
 
 	void displayBooks()
 	{
-		//sortBookList();
+		sortBookList();
 		size_t headerWidth[5] = {13, 103, 53, 53, 10};
 		cout << left << setw(headerWidth[0]) << "ID"
 			 << setw(headerWidth[1]) << "Book Details"
@@ -292,7 +311,7 @@ public:
 		int numKeywords = 0;
 		string *keywords = split(keyword, ' ', &numKeywords);
 
-		//sortBookList();
+		// sortBookList();
 		size_t headerWidth[5] = {13, 103, 53, 53, 10};
 		cout << left << setw(headerWidth[0]) << "ID"
 			 << setw(headerWidth[1]) << "Book Details"
@@ -338,229 +357,281 @@ public:
 		}
 	}
 
-	//void sortBorrowerList()
-	//{
-		//sort(borrowerList, borrowerList + numBorrowers, [](Borrower a, Borrower b)
-			 //{ return a.lastName < b.lastName; });
-	//}
-
 	void addBorrower(string lastName, string firstName, string contactNum)
 	{
 		Borrower borrower;
+		borrower.borrowerID = "HKCC" + string(4 - to_string(numBorrowers + 1).size(), '0') + to_string(numBorrowers + 1);
 		borrower.lastName = lastName;
 		borrower.firstName = firstName;
+		borrower.fullName = lastName + " " + firstName;
 		borrower.contactNum = contactNum;
 		borrowerList[numBorrowers] = borrower;
 		numBorrowers++;
 		cout << "Borrower added" << borrower.borrowerID << endl;
 	}
 
-void displayBorrowers()
-    {
-        //sortBorrowerList();
-        size_t headerWidth[6] = {11, 13, 33, 11, 3};
-        cout << left << setw(headerWidth[0]) << "borrowerID"
-             << setw(headerWidth[1]) << "Name"
-             << setw(headerWidth[4]) << "Contact number"
-             << setw(headerWidth[5]) << "Number of books borrowed"
-             << endl;
-
-        for (int i = 0; i < numBorrowers; i++)
-        {
-            cout << left << setw(headerWidth[0]) << borrowerList[i].borrowerID
-            << setw(headerWidth[1]) << borrowerList[i].lastName
-            << setw(headerWidth[2]) << borrowerList[i].firstName
-            << setw(headerWidth[4]) << borrowerList[i].contactNum
-			//<< setw(headerWidth[5]) << borrowerList[i].numberOfBooksBorrowed
-			<<endl;
-        }
-    }
-
-void searchBorrower()
+	void displayBorrowers()
 	{
-		string keyword;
-		cin.ignore();
-		cout << "Enter keyword: ";
-		getline(cin, keyword);
-		if (keyword.size() > 8)
+		// sortBorrowerList();
+		size_t headerWidth[4] = {11, 43, 20, 20};
+		cout << left << setw(headerWidth[0]) << "borrowerID"
+			 << setw(headerWidth[1]) << "Name"
+			 << setw(headerWidth[2]) << "Contact Number"
+			 << setw(headerWidth[3]) << "Number of books borrowed"
+			 << endl;
+
+		for (int i = 0; i < numBorrowers; i++)
 		{
-			cout << "Please enter a valid borrowerID" << endl;
+			cout << left << setw(headerWidth[0]) << borrowerList[i].borrowerID
+				 << setw(headerWidth[1]) << borrowerList[i].lastName + " " + borrowerList[i].firstName
+				 << setw(headerWidth[2]) << borrowerList[i].contactNum
+				 << setw(headerWidth[3]) << borrowerList[i].numBorrowedBooks
+				 << endl;
+		}
+	}
+
+	void searchBorrower()
+	{
+		string borrowerID;
+		cout << "Enter borrowerID: ";
+		cin >> borrowerID;
+		if (borrowerID.size() > 10)
+		{
+			cout << "Only string with maximum 10 characters is allowed" << endl;
 			return;
 		}
 
-		int numKeywords = 0;
-		string *keywords = split(keyword, ' ', &numKeywords);
+		int index = validateBorrower(borrowerID, 0, numBorrowers - 1);
 
-		//sortBorrowerList();
-		size_t headerWidth[5] = {13, 103, 53, 53, 10};
-		cout << left << setw(headerWidth[0]) << "borrowerID"
-			 << setw(headerWidth[1]) << "Name"
-			 << setw(headerWidth[3]) << "Contact number" 
-			 << setw(headerWidth[3]) << "List of borrowed books" << endl;
-		for (int i = 0; i < numBooks; i++)
+		if (index == -1)
 		{
-			string ID = borrowerList[i].borrowerID;
-			string lastName = borrowerList[i].lastName;
-			string firstName = borrowerList[i].firstName;
-			string contactNum = borrowerList[i].contactNum;
-		  //string borrowedBooks = borrowerList[i].borrowedBooks;
+			cout << "Borrower not found" << endl;
+			return;
+		}
+		else
+		{
+			size_t headerWidth[4] = {11, 43, 20, 20};
+			cout << left << setw(headerWidth[0]) << "borrowerID"
+				 << setw(headerWidth[1]) << "Name"
+				 << setw(headerWidth[2]) << "Contact Number"
+				 << setw(headerWidth[3]) << "Number of books borrowed"
+				 << endl;
 
-			for (int j = 0; j < numKeywords; j++)
+			cout << left << setw(headerWidth[0]) << borrowerList[index].borrowerID
+				 << setw(headerWidth[1]) << borrowerList[index].fullName
+				 << setw(headerWidth[2]) << borrowerList[index].contactNum
+				 << setw(headerWidth[3]) << borrowerList[index].numBorrowedBooks
+				 << endl;
+
+			cout << "List of books borrowed: " << endl;
+
+			if (borrowerList[index].numBorrowedBooks > 0)
 			{
-				if (keywords[j][0] == '"' && keywords[j][keywords[j].size() - 1] == '"')
+				cout << left << setw(headerWidth[0]) << "bookID"
+					 << setw(headerWidth[1]) << "Title"
+					 << setw(headerWidth[2]) << "Author"
+					 << setw(headerWidth[3]) << "Publisher"
+					 << endl;
+				for (int i = 0; i < borrowerList[index].numBorrowedBooks; i++)
 				{
-					keywords[j] = keywords[j].substr(1, keywords[j].size() - 2);
+					cout << left << setw(headerWidth[0]) << borrowerList[index].borrowedBooks[i].ID
+						 << setw(headerWidth[1]) << borrowerList[index].borrowedBooks[i].title
+						 << setw(headerWidth[2]) << borrowerList[index].borrowedBooks[i].author
+						 << setw(headerWidth[3]) << borrowerList[index].borrowedBooks[i].publisher
+						 << endl;
 				}
-				else
-				{
-					transform(ID.begin(), ID.end(), ID.begin(), ::tolower);
-					transform(lastName.begin(), lastName.end(), lastName.begin(), ::tolower);
-					transform(firstName.begin(), firstName.end(), firstName.begin(), ::tolower);
-					transform(contactNum.begin(), contactNum.end(), contactNum.begin(), ::tolower);
-
-					transform(keywords[j].begin(), keywords[j].end(), keywords[j].begin(), ::tolower);
-				}
-
-				if (ID.find(keywords[j]))
-				{
-					cout << left << setw(headerWidth[0]) << borrowerList[i].borrowerID
-					     << setw(headerWidth[0]) << ""
-						 << setw(headerWidth[1]) << borrowerList[i].lastName
-						 << setw(headerWidth[4]) << ""
-						 << "\n"
-					     << setw(headerWidth[0]) << ""
-						 << setw(headerWidth[1]) << borrowerList[i].firstName
-						 << setw(headerWidth[4]) << ""
-						 << "\n"
-						 << setw(headerWidth[0]) << ""
-						 << setw(headerWidth[1]) << borrowerList[i].contactNum
-						 << setw(headerWidth[0]) << ""
-						 << setw(headerWidth[1]) 
-					     <<"\n"
-						 << setw(headerWidth[0]) << bookList[i].ID
-				 		<< setw(headerWidth[1]) << bookList[i].title
-					 	<< setw(headerWidth[1]) << bookList[i].author
-				 		<< setw(headerWidth[1]) << bookList[i].publisher + "(" + bookList[i].year + ")"
-				 		<< endl; 
-					break;
-				}
+			}
+			else
+			{
+				cout << "No books borrowed" << endl;
 			}
 		}
 	}
 
 	void addBorrowerByUser()
 	{
-              string lastName, firstName, contactNum;
-              cout << "=====================================================================================================" << endl;
-              cout << "To add a borrower to the system, the you needs to provide the following details :" << endl;
-              cout << "-lastName(a string with maximum 10 characters, convert to UPPER case)" << endl;
-              cout << "-firstName(a string with maximum 30 characters, capitalize each word)" << endl;
-              cout << "-contactNumber(an 8-digit number, begins with 2, 3, 5, 6, or 9)" << endl;
-              cout << "=====================================================================================================" << endl;
+		string lastName, firstName, contactNum;
+		cout << "=====================================================================================================" << endl;
+		cout << "To add a borrower to the system, the you needs to provide the following details :" << endl;
+		cout << "-lastName(a string with maximum 10 characters)" << endl;
+		cout << "-firstName(a string with maximum 30 characters)" << endl;
+		cout << "-contactNumber(an 8-digit number, begins with 2, 3, 5, 6, or 9)" << endl;
+		cout << "=====================================================================================================" << endl;
 
-              cout << "Enter lastName: ";
-              cin >> lastName;
-              while (lastName.size() > 10)
-              {
-              cout << "Only string with maximum 10 characters is allowed" << endl;
-              cin >> lastName;
-              continue;
-              }
-        
-              cout << "Enter firstName: ";
-              cin >> firstName;
-              while(firstName.size() > 30)
-              {
-              cout << "Only string with maximum 30 characters is allowed" << endl;
-              cin >> firstName;
-              continue;
-              }
-        
-              cout << "Enter contactNumber: ";
-              getline(cin,contactNum);
-              while(contactNum.size()!=8)
-               {
-              cout<<"Only integer with an 8-digit number, begins with 2, 3, 5, 6, or 9 is allowed"<<endl;
-              cout<<"Enter contactNumber: ";
-              getline(cin,contactNum);
-              continue;
-               }
-        
-              string borrowerID;
-              int numBorrowers;
-              borrowerID="HKCC"+to_string(numBorrowers);
-              if (borrowerID.size()==5)
-              {
-                 borrowerID="HKCC000"+to_string(numBorrowers);
-              }
-    
-              else if (borrowerID.size()==6)
-              {
-                 borrowerID="HKCC00"+to_string(numBorrowers);
-              }
-    
-              else if (borrowerID.size()==7)
-              {
-                 borrowerID="HKCC0"+to_string(numBorrowers);
-              }
-              numBorrowers++;
-              cout<<"Your borrowerID is "<<borrowerID;
-    
-        
-              addBorrower(lastName, firstName, contactNum);
+		cout << "Enter Last Name: ";
+		cin.ignore();
+		getline(cin, lastName);
+		while (lastName.size() > 10)
+		{
+			cout << "Only string with maximum 10 characters is allowed" << endl;
+			getline(cin, lastName);
+			if (isExit(lastName))
+				return;
+		}
+
+		cout << "Enter First Name: ";
+		getline(cin, firstName);
+		while (firstName.size() > 30)
+		{
+			cout << "Only string with maximum 30 characters is allowed" << endl;
+			getline(cin, firstName);
+			if (isExit(firstName))
+				return;
+		}
+
+		cout << "Enter Contact Number: ";
+		getline(cin, contactNum);
+		while (contactNum.size() != 8 || !isValidContactNum(contactNum))
+		{
+			cout << "Only integer with an 8-digit number, begins with 2, 3, 5, 6, or 9 is allowed" << endl;
+			cout << "Enter Contact Number: ";
+			getline(cin, contactNum);
+			cout << contactNum << endl;
+			if (isExit(contactNum))
+				return;
+		}
+
+		addBorrower(lastName, firstName, contactNum);
 	}
 
 	void removeBorrowerByUser()
 	{
-		string ID;
+		string borrowerID;
 		cout << "Enter borrower ID: ";
-		cin >> ID;
-		for (int i = 0; i < numBooks; i++)
+		cin >> borrowerID;
+		int index = validateBorrower(borrowerID, 0, numBorrowers - 1);
+		if (index == -1 || borrowerList[index].numBorrowedBooks > 0)
+			cout << "Borrower not found or has books borrowed" << endl;
+		else
 		{
-			if (borrowerList[i].borrowerID == ID && borrowerList[i].isAvailable)
+			// display the borrower
+			size_t headerWidth[4] = {11, 43, 20, 20};
+			cout << left << setw(headerWidth[0]) << "borrowerID"
+				 << setw(headerWidth[1]) << "Name"
+				 << setw(headerWidth[2]) << "Contact Number"
+				 << setw(headerWidth[3]) << "Number of books borrowed"
+				 << endl;
+			cout << left << setw(headerWidth[0]) << borrowerList[index].borrowerID
+				 << setw(headerWidth[1]) << borrowerList[index].fullName
+				 << setw(headerWidth[2]) << borrowerList[index].contactNum
+				 << setw(headerWidth[3]) << borrowerList[index].numBorrowedBooks
+				 << endl;
+			// confirm
+			string choice;
+			cout << "Are you sure you want to remove this borrower? (Y/n): ";
+			cin >> choice;
+			if (choice == "Y" || choice == "y")
 			{
-				size_t headerWidth[5] = {13, 103, 53, 53, 10};
-				cout << left << setw(headerWidth[0]) << "borrowerID"
-					 << setw(headerWidth[1]) << "Name"
-					 << setw(headerWidth[4]) << "Contact Number" << endl;
-				cout << left << setw(headerWidth[0]) << borrowerList[i].borrowerID
-					 << setw(headerWidth[1]) << borrowerList[i].lastName
-				     << setw(headerWidth[0]) << ""
-					 << setw(headerWidth[1]) << borrowerList[i].firstName
-					 << setw(headerWidth[4]) << ""
-					 << "\n"
-					 << setw(headerWidth[0]) << ""
-					 << setw(headerWidth[1]) << borrowerList[i].contactNum
-					 << endl;
-				cout << "Are you sure you want to remove this borrower? (Y/N): ";
-				string choice;
-				cin >> choice;
-				if (choice == "Y" || choice == "y")
+				for (int i = index; i < numBorrowers - 1; i++)
 				{
-					for (int j = i; j < numBorrowers - 1; j++)
-					{
-						borrowerList[j] = borrowerList[j + 1];
-					}
-					numBorrowers--;
-					cout << "Borrower removed" << endl;
-					return;
+					borrowerList[i] = borrowerList[i + 1];
+				}
+				numBorrowers--;
+				cout << "Borrower removed" << endl;
+			}
+			else
+				cout << "Borrower not removed" << endl;
+		}
+	}
+
+	void borrowBooks()
+	{
+		string borrowerID;
+		string valid = "HKCC";
+		string bookID;
+		bool flag = true;
+		cout << "*************************************Borrow Book(s)****************************************" << endl;
+		cout << "To borrow book(s), you should provide the following details: " << endl;
+		cout << "Borrower ID (HKCCXXXX e.g. HKCC0001)" << endl;
+		cout << "Book ID" << endl;
+		cout << "You can borrow at most 5 books." << endl;
+		cout << "If the quota is used up, you cannot borrow more books until some books have been returned." << endl;
+		cout << "*******************************************************************************************" << endl;
+
+		while (flag == true)
+		{
+			cout << "Enter Borrower ID: ";
+			cin.ignore(1);
+			getline(cin, borrowerID);
+			cout << borrowerID << endl;
+			if (isExit(borrowerID))
+				return;
+			if ((borrowerID.size() != 8))
+			{
+				cout << "Invalid Borrower ID length. Please enter again." << endl;
+			}
+			else if (borrowerID.substr(0, 4) != valid.substr(0, 4))
+			{
+				cout << "Invalid Borrower ID format. Please enter again." << endl;
+			}
+			else
+			{
+				// find borrower ID
+				if ((validateBorrower(borrowerID, 0, numBorrowers - 1)) == -1)
+				{
+					cout << "Borrower ID not found. Please enter again." << endl;
+				}
+				else
+					flag = false;
+			}
+		}
+
+		int borrowerIndex = validateBorrower(borrowerID, 0, numBorrowers - 1);
+
+		if (borrowerList[borrowerIndex].numBorrowedBooks == 5)
+		{
+			cout << "You have reached the maximum number of books you can borrow." << endl;
+			cout << "Please return some books before borrowing more." << endl;
+			return;
+		}
+
+		flag = true;
+		while (flag == true)
+		{
+			cout << "Enter Book ID: ";
+			getline(cin, bookID);
+			cout << bookID << endl;
+			if (isExit(bookID))
+				return;
+			if ((bookID == "N") || (bookID == "n"))
+			{
+				cout << "End of Book ID input." << endl;
+				flag = false;
+				break;
+			}
+			else if (bookID.size() > 10)
+			{
+				cout << "Invalid Book ID length. Please enter again." << endl;
+			}
+			else
+			{
+				int bookIndex = validateBook(bookID);
+				if (bookIndex == -1)
+				{
+					cout << "Please enter again." << endl;
 				}
 				else
 				{
-					cout << "Borrower not removed" << endl;
-					return;
+					// update book availability
+					// quota++
+					// break;
+					if (bookList[bookIndex].isAvailable)
+					{
+						borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
+						borrowerList[borrowerIndex].numBorrowedBooks++;
+						bookList[bookIndex].isAvailable = false;
+						cout << "Book borrowed successfully." << endl;
+					}
+					else
+					{
+					}
 				}
-
-				// for (int j = i; j < numBorrowers - 1; j++)
-				// {
-				// 	borrowersList[j] = borrowersList[j + 1];
-				// }
-				// numBorrowers--;
-				// cout << "Borrower removed" << endl;
-				// return;
 			}
+			flag = false;
 		}
-		cout << "Borrower not found or not available" << endl;
+
+		cout << "End of borrowing process. Back to main menu." << endl;
+		return;
 	}
 };
 
@@ -694,6 +765,9 @@ void importFile()
 			cout << "Invalid input. Please try again." << endl;
 		}
 	}
+
+	library.sortBookList();
+	library.sortBorrowerList();
 }
 
 void manageBorrowers()
@@ -792,89 +866,16 @@ void manageBooks()
 	manageBooks();
 }
 
-void borrowBooks(){
-	string borrowerID;
-	string valid = "HKCC";
-	string bookID;
-	bool flag = true;
-	Library borrowerIDvalid, bookIDvalid;
-	cout << "*************************************Borrow Book(s)****************************************" << endl;
-	cout << "To borrow book(s), you should provide the following details: " << endl;
-	cout << "Borrower ID" << endl;
-	cout << "Book ID" << endl;
-	cout << "You can borrow at most 5 books." << endl;
-	cout << "If the quota is used up, you cannot borrow more books until some books have been returned." << endl;
-	cout << "*******************************************************************************************" << endl;
-
-	while (flag == true){
-		cout << "Enter Borrower ID: ";
-		getline(cin, borrowerID);
-		if ((borrowerID.size() != 8) ){
-			cout << "Invalid Borrower ID length. Please enter again." << endl;
-		}
-		else if (borrowerID.substr(0,4) != valid.substr(0,4)){
-			cout << "Invalid Borrower ID format. Please enter again." << endl;
-		}
-		else {
-			// find borrower ID
-			if ((borrowerIDvalid.validateBorrower(borrowerID)) == false){
-				cout << "Borrower ID not found. Please enter again." << endl;
-			}
-			else flag = false;
-		}
-	}
-	
-	// if (){
-		// check quota
-	// }
-	// else {
-		// cout << "Out of quota." << endl;
-		// break;
-	// }
-	
-
-	flag = true;
-	while (flag == true){
-		cout << "Enter Book ID (enter N/n when finish input): ";
-		getline(cin,bookID);
-		if ((bookID == "N") || (bookID == "n")){
-			cout << "End of Book ID input." << endl;
-			flag = false;
-			break;
-		}
-		else if (bookID.size() > 10){
-			cout << "Invalid Book ID length. Please enter again." << endl;
-		}
-		else {
-			if ((bookIDvalid.validateBook(bookID)) == false){
-				cout << "Please enter again." << endl;
-			}
-			else {
-				// update book availability
-				// quota++
-				// break;
-			}
-		}
-		// if (out of quota){
-			// cout << "Out of quota." << endl;
-			// flag = false;
-		// }
-	}
-
-	cout << "End of borrowing process. Back to main menu." << endl;
-	return;
-}
-
 void membersList()
 {
 	cout << "******************************************" << endl;
 	cout << setw(15) << "Group #12" << setw(20) << "Member List" << endl;
-	cout << "Name:" << setw(20) << "HUNG Ho Yin" << setw(12) <<"22160123A" << setw(5) << "203C"<<endl;
-	cout << "Name:" << setw(20) << "KAN Wing Yi" << setw(12) << "22144320A" << setw(5) << "203C"<<endl;
-	cout << "Name:" << setw(20) << "KU Ka Ho" << setw(12) << "22150222A" << setw(5) << "203A"<<endl;
-	cout << "Name:" << setw(20) << "LUI Chun Shing" << setw(12) << "22075684A" << setw(5) << "203D"<<endl;
-	cout << "Name:" << setw(20) << "*MAK Ka Wah Andrew" << setw(12) << "22079450A" << setw(5) << "203C"<<endl;
-	cout << "Name:" << setw(20) << "YUEN Kin Man" << setw(12) << "22153666A" << setw(5) << "203C"<<endl;
+	cout << "Name:" << setw(20) << "HUNG Ho Yin" << setw(12) << "22160123A" << setw(5) << "203C" << endl;
+	cout << "Name:" << setw(20) << "KAN Wing Yi" << setw(12) << "22144320A" << setw(5) << "203C" << endl;
+	cout << "Name:" << setw(20) << "KU Ka Ho" << setw(12) << "22150222A" << setw(5) << "203A" << endl;
+	cout << "Name:" << setw(20) << "LUI Chun Shing" << setw(12) << "22075684A" << setw(5) << "203D" << endl;
+	cout << "Name:" << setw(20) << "*MAK Ka Wah Andrew" << setw(12) << "22079450A" << setw(5) << "203C" << endl;
+	cout << "Name:" << setw(20) << "YUEN Kin Man" << setw(12) << "22153666A" << setw(5) << "203C" << endl;
 	cout << "******************************************" << endl;
 	return;
 }
@@ -912,7 +913,7 @@ void mainMenu()
 		break;
 	case 3:
 		// Borrow book(s)
-		borrowBooks();
+		library.borrowBooks();
 		break;
 	case 4:
 		// Return book(s)
