@@ -125,7 +125,6 @@ public:
 	void sortBorrowerList()
 	{
 		int i, j;
-		cout << numBorrowers << endl;
 		for (i = 0; i < numBorrowers - 1; i++)
 		{
 			for (j = 0; j < numBorrowers - i - 1; j++)
@@ -177,7 +176,7 @@ public:
 					 << setw(headerWidth[0]) << ""
 					 << setw(headerWidth[1]) << bookList[i].publisher + "(" + bookList[i].year + ")"
 					 << endl;
-				cout << "Are you sure you want to remove this book? (Y/N): ";
+				cout << "Are you sure you want to remove this book? (Y/n): ";
 				string choice;
 				cin >> choice;
 				if (choice == "Y" || choice == "y")
@@ -214,67 +213,116 @@ public:
 		int year;
 		cout << "=====================================================================================================" << endl;
 		cout << "To add a book to the system, the you needs to provide the following details :" << endl;
-		cout << "-ID(a string with maximum 10 characters, has to be unique)" << endl;
-		cout << "-Title(a string with maximum 100 characters)" << endl;
-		cout << "-Author(a string with maximum 50 characters, may contains multiple names separated by semi-colon ‘;’)" << endl;
-		cout << "-Publisher(a string with maximum 50 characters)" << endl;
-		cout << "-Year(a positive integer)" << endl;
+		cout << "- ID(a string with maximum 10 characters, has to be unique)" << endl;
+		cout << "- Title(a string with maximum 100 characters)" << endl;
+		cout << "- Author(a string with maximum 50 characters, may contains multiple names separated by semi-colon ‘;’)" << endl;
+		cout << "- Publisher(a string with maximum 50 characters)" << endl;
+		cout << "- Year(a positive integer)" << endl;
+		cout << "type 'exit' to exit" << endl;
 		cout << "=====================================================================================================" << endl;
 
-		cout
-			<< "Enter book ID: ";
-		cin >> ID;
-		if (ID.size() > 10)
+		while (true)
 		{
-			cout << "Only string with maximum 10 characters is allowed" << endl;
-			return;
-		}
-		for (int i = 0; i < numBooks; i++)
-		{
-			if (bookList[i].ID == ID)
+
+			cout
+				<< "Enter book ID: ";
+			cin >> ID;
+			if (isExit(ID))
+			{
+				return;
+			}
+
+			if (ID.size() > 10)
+			{
+				cout << "Only string with maximum 10 characters is allowed" << endl;
+			}
+			else if (validateBook(ID) != -1)
 			{
 				cout << "Book ID already exists" << endl;
-				return;
+			}
+			else
+			{
+				break;
 			}
 		}
 
-		cout << "Enter book title: ";
-		cin.ignore();
-		getline(cin, title);
-		if (title.size() > 100)
+		while (true)
 		{
-			cout << "Only string with maximum 100 characters is allowed" << endl;
-			return;
+			cout << "Enter book title: ";
+			cin.ignore();
+			getline(cin, title);
+			if (isExit(title))
+			{
+				return;
+			}
+			if (title.size() > 100)
+			{
+				cout << "Only string with maximum 100 characters is allowed" << endl;
+			}
+			else
+			{
+				break;
+			}
 		}
 
-		cout << "Enter book author: ";
-		getline(cin, author);
-		if (author.size() > 50)
+		while (true)
 		{
-			cout << "Only string with maximum 50 characters is allowed" << endl;
-			return;
+			cout << "Enter book author: ";
+			getline(cin, author);
+			if (isExit(author))
+			{
+				return;
+			}
+			if (author.size() > 50)
+			{
+				cout << "Only string with maximum 50 characters is allowed" << endl;
+			}
+			else
+			{
+				break;
+			}
 		}
 
-		cout << "Enter book publisher: ";
-		getline(cin, publisher);
-		if (publisher.size() > 50)
+		while (true)
 		{
-			cout << "Only string with maximum 50 characters is allowed" << endl;
-			return;
+			cout << "Enter book publisher: ";
+			getline(cin, publisher);
+			if (isExit(publisher))
+			{
+				return;
+			}
+			if (publisher.size() > 50)
+			{
+				cout << "Only string with maximum 50 characters is allowed" << endl;
+			}
+			else
+			{
+				break;
+			}
 		}
 
-		cout << "Enter book year: ";
-		cin >> year;
-		if (cin.fail())
-		{						   // check whether last input was failed
-			cin.clear();		   // Reset the input error status to no error
-			cin.ignore(255, '\n'); // ignore maximum of 255 characters,
-								   // or reached the end of line.
-		}
-		if (year <= 0)
+		while (true)
 		{
-			cout << "Only positive integer is allowed" << endl;
-			return;
+			cout << "Enter book year: ";
+			cin >> year;
+			if (isExit(to_string(year)))
+			{
+				return;
+			}
+			if (cin.fail())
+			{						   // check whether last input was failed
+				cin.clear();		   // Reset the input error status to no error
+				cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+									   // or reached the end of line.
+			}
+			if (year <= 0)
+			{
+				cout << "Only positive integer is allowed" << endl;
+			}
+			else
+			{
+				break;
+			}
 		}
 		addBook(ID, title, author, publisher, to_string(year));
 		sortBookList();
@@ -329,9 +377,15 @@ public:
 
 	void searchBook()
 	{
+		cout << "=====================================================================================================" << endl;
+		cout << "To search for a book, the user needs to provide the following details :" << endl;
+		cout << "Single keyword or multiple keywords separated by space" << endl;
+		cout << "The system will display all books that contain the keyword(s) in their title, author, or publisher" << endl;
+		cout << "If the keyword is qutoed, the system will display all books that contain the exact keyword" << endl;
+		cout << "=====================================================================================================" << endl;
 		string keyword;
 		cin.ignore();
-		cout << "Enter keyword: ";
+		cout << "Enter keyword:" << endl;
 		getline(cin, keyword);
 		if (keyword.size() > 50)
 		{
@@ -397,7 +451,7 @@ public:
 		borrower.contactNum = contactNum;
 		borrowerList[numBorrowers] = borrower;
 		numBorrowers++;
-		cout << "Borrower added" << borrower.borrowerID << endl;
+		cout << "Borrower added " << borrower.borrowerID << endl;
 	}
 
 	void displayBorrowers()
@@ -516,7 +570,6 @@ public:
 			cout << "Only integer with an 8-digit number, begins with 2, 3, 5, 6, or 9 is allowed" << endl;
 			cout << "Enter Contact Number: ";
 			getline(cin, contactNum);
-			cout << contactNum << endl;
 			if (isExit(contactNum))
 				return;
 		}
@@ -584,7 +637,6 @@ public:
 			cout << "Enter Borrower ID: ";
 			cin.ignore(1);
 			getline(cin, borrowerID);
-			cout << borrowerID << endl;
 			if (isExit(borrowerID))
 				return;
 			if ((borrowerID.size() != 8))
@@ -621,7 +673,6 @@ public:
 		{
 			cout << "Enter Book ID: ";
 			getline(cin, bookID);
-			cout << bookID << endl;
 			if (isExit(bookID))
 				return;
 			if ((bookID == "N") || (bookID == "n"))
@@ -683,7 +734,6 @@ public:
 			cout << "Enter Borrower ID: ";
 			cin.ignore(1);
 			getline(cin, borrowerID);
-			cout << borrowerID << endl;
 			if (isExit(borrowerID))
 				return;
 			if ((borrowerID.size() != 8))
@@ -719,7 +769,6 @@ public:
 		{
 			cout << "Enter Book ID: ";
 			getline(cin, bookID);
-			cout << bookID << endl;
 			if (isExit(bookID))
 				return;
 			if ((bookID == "N") || (bookID == "n"))
