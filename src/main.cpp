@@ -107,14 +107,37 @@ public:
 
 	void sortBookList()
 	{
-		sort(bookList, bookList + numBooks, [](Book a, Book b)
-			 { return a.title < b.title; });
+		int i, j;
+		for (i = 0; i < numBooks - 1; i++)
+		{
+			for (j = 0; j < numBooks - i - 1; j++)
+			{
+				if (bookList[j].title > bookList[j + 1].title)
+				{
+					Book temp = bookList[j];
+					bookList[j] = bookList[j + 1];
+					bookList[j + 1] = temp;
+				}
+			}
+		}
 	}
 
 	void sortBorrowerList()
 	{
-		sort(borrowerList, borrowerList + numBorrowers, [](Borrower a, Borrower b)
-			 { return a.fullName < b.fullName; });
+		int i, j;
+		cout << numBorrowers << endl;
+		for (i = 0; i < numBorrowers - 1; i++)
+		{
+			for (j = 0; j < numBorrowers - i - 1; j++)
+			{
+				if (borrowerList[j].lastName > borrowerList[j + 1].lastName)
+				{
+					Borrower temp = borrowerList[j];
+					borrowerList[j] = borrowerList[j + 1];
+					borrowerList[j + 1] = temp;
+				}
+			}
+		}
 	}
 
 	void addBook(string ID, string title, string author, string publisher, string year)
@@ -254,21 +277,17 @@ public:
 			return;
 		}
 		addBook(ID, title, author, publisher, to_string(year));
+		sortBookList();
 	}
 
 	int validateBorrower(string borrowerID, int low, int high)
 	{
-		if (high >= low)
+		for (int i = 0; i < numBorrowers; i++)
 		{
-			int mid = low + (high - low) / 2;
-
-			if (borrowerList[mid].borrowerID == borrowerID)
-				return mid;
-
-			if (borrowerList[mid].borrowerID > borrowerID)
-				return validateBorrower(borrowerID, low, mid - 1);
-
-			return validateBorrower(borrowerID, mid + 1, high);
+			if (borrowerList[i].borrowerID == borrowerID)
+			{
+				return i;
+			}
 		}
 
 		return -1;
@@ -288,7 +307,6 @@ public:
 
 	void displayBooks()
 	{
-		sortBookList();
 		size_t headerWidth[5] = {13, 103, 53, 53, 10};
 		cout << left << setw(headerWidth[0]) << "ID"
 			 << setw(headerWidth[1]) << "Book Details"
@@ -324,7 +342,6 @@ public:
 		int numKeywords = 0;
 		string *keywords = split(keyword, ' ', &numKeywords);
 
-		// sortBookList();
 		size_t headerWidth[5] = {13, 103, 53, 53, 10};
 		cout << left << setw(headerWidth[0]) << "ID"
 			 << setw(headerWidth[1]) << "Book Details"
@@ -385,7 +402,7 @@ public:
 
 	void displayBorrowers()
 	{
-		// sortBorrowerList();
+		cout << "sorting" << endl;
 		size_t headerWidth[4] = {11, 43, 20, 20};
 		cout << left << setw(headerWidth[0]) << "borrowerID"
 			 << setw(headerWidth[1]) << "Name"
@@ -505,6 +522,7 @@ public:
 		}
 
 		addBorrower(lastName, firstName, contactNum);
+		sortBorrowerList();
 	}
 
 	void removeBorrowerByUser()
