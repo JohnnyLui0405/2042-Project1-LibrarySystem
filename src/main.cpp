@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <cstdlib>
 using namespace std;
 
 // Common functions
@@ -353,6 +354,12 @@ public:
 		return -1;
 	}
 
+	string randomBook(){
+		int ran = rand() % (numBooks + 1);
+		string bookID = bookList[ran].ID;
+		return bookID;
+	}
+
 	void displayBooks()
 	{
 		size_t headerWidth[5] = {13, 103, 53, 53, 10};
@@ -439,6 +446,15 @@ public:
 				}
 			}
 		}
+	}
+
+	void displayBookInfo(int bookIndex){
+		cout << "Book details:" << endl;
+		cout << "Title: " << bookList[bookIndex].title << endl;
+		cout << "Author: " << bookList[bookIndex].author << endl;
+		cout << "Publisher: " << bookList[bookIndex].publisher << endl;
+		cout << "Year of publication: " << bookList[bookIndex].year << endl;
+		return;
 	}
 
 	void addBorrower(string lastName, string firstName, string contactNum)
@@ -671,7 +687,7 @@ public:
 		flag = true;
 		while (flag == true)
 		{
-			cout << "Enter Book ID: ";
+			cout << "Enter Book ID (press [N/n] if you don't want to borrow more books): ";
 			getline(cin, bookID);
 			if (isExit(bookID))
 				return;
@@ -767,7 +783,7 @@ public:
 		flag = true;
 		while (flag == true)
 		{
-			cout << "Enter Book ID: ";
+			cout << "Enter Book ID (press [N/n] if you don't want to return more books): ";
 			getline(cin, bookID);
 			if (isExit(bookID))
 				return;
@@ -809,6 +825,47 @@ public:
 		cout << "End of returning process. Back to main menu." << endl;
 		return;
 	}
+
+	void randomBookRecommend(){
+		string bookID;
+		int bookIndex;
+		char input;
+		bool valid = false;
+		bool flag1 = true;
+		cout << "Having no idea to read which book? Here is an available book recommended for you!" << endl;
+		while (flag1){
+			while (valid = false)
+			{
+				bookID = randomBook();
+				bookIndex = validateBook(bookID);
+				if (bookIndex != -1)
+				{
+					valid = true;
+					cout << "ID of Recommended book: " << bookID << endl;
+				}
+			}
+
+			displayBookInfo(bookIndex);
+
+			bool flag2 = true;
+			while (flag2){
+				cout << "Would you like to get another book recommendation? (Y/n)" << endl;
+				cin >> input;
+				if (input != 'Y' || input != 'y' || input != 'N' || input != 'n')
+				{
+					cout << "Invalid input. Please enter again." << endl;
+				}
+				else if (input == 'N' || input == 'n'){
+					flag1 = false;
+					flag2 = false;
+				}
+				else flag2 = false;
+			}
+		}
+		cout << "Back to main menu." << endl;
+		return;
+	}
+
 };
 
 Library library;
@@ -1060,15 +1117,15 @@ void membersList()
 void mainMenu()
 {
 	int option;
-	cout << "*** Library Management System ***" << endl;
+	cout << "******* Library Management System *******" << endl;
 	cout << "[1] Manage books" << endl;
 	cout << "[2] Manage borrowers" << endl;
 	cout << "[3] Borrow book(s)" << endl;
 	cout << "[4] Return book(s)" << endl;
-	cout << "[5] Useful feature(s) added" << endl;
+	cout << "[5] Random available book recommendation" << endl;
 	cout << "[6] Member List" << endl;
 	cout << "[7] Exit" << endl;
-	cout << "*********************************" << endl;
+	cout << "*****************************************" << endl;
 	cout << "Option (1 - 7): ";
 
 	cin >> option;
@@ -1098,6 +1155,7 @@ void mainMenu()
 		break;
 	case 5:
 		// Useful feature(s) added
+		library.randomBookRecommend();
 		break;
 	case 6:
 		// Member List
