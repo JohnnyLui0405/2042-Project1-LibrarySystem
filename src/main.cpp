@@ -36,14 +36,99 @@ string *split(string str, char del, int *numKeywords)
 	return keywords;
 }
 
+// If input is "exit", "quit", or "q", return true
 bool isExit(string input)
 {
 	return input == "exit" || input == "quit" || input == "q";
 }
 
+// If Contact Number is valid, return true
 bool isValidContactNum(string contactNum)
 {
 	return (contactNum[0] == '2' || contactNum[0] == '3' || contactNum[0] == '5' || contactNum[0] == '6' || contactNum[0] == '9');
+}
+
+// to convert string to lowercase
+string toLower(string str)
+{
+	for (int i = 0; i < (int)str.size(); i++)
+	{
+		str[i] = tolower(str[i]);
+	}
+	return str;
+}
+
+// to convert string to uppercase
+string toUpper(string str)
+{
+	for (int i = 0; i < (int)str.size(); i++)
+	{
+		str[i] = toupper(str[i]);
+	}
+	return str;
+}
+
+// class DateTime
+// {
+// public:
+// 	void printTime()
+// 	{
+// 		cout << setfill('0') << setw(2) << hour << ":" << setw(2) << minute << ":" << setw(2) << second << " " << setw(2) << day << "/" << setw(2) << month << "/" << setw(4) << year << endl;
+// 	}
+// 	void setTimeNow()
+// 	{
+// 		// time(0) get Unix Time (seconds since 1 Jan 1970)
+// 		// tm is a structure that contains the time components
+// 		// localtime() convert Unix Time to local Time Zone
+// 		time_t now = time(0);
+// 		tm *ltm = localtime(&now);
+// 		hour = ltm->tm_hour;
+// 	}
+// 	void getDueDay()
+// 	{
+// 		hour
+// 	}
+
+// private:
+// 	int hour, minute, second, day, month, year;
+// };
+
+// DateTime getDueDate()
+// {
+// 	DateTime dueDate;
+// 	dueDate.setTimeNow();
+// 	dueDate.day += 7;
+// 	if (dueDate.day > 30)
+// 	{
+// 		dueDate.day -= 30;
+// 		dueDate.month++;
+// 		if (dueDate.month > 12)
+// 		{
+// 			dueDate.month -= 12;
+// 			dueDate.year++;
+// 		}
+// 	}
+// 	return dueDate;
+// }
+
+void systemExit()
+{
+	char choice;
+	cout << "Are you sure you want to exit? (Y/n): ";
+	cin >> choice;
+	if (choice == 'Y' || choice == 'y')
+	{
+		cout << "Exiting..." << endl;
+		exit(0);
+	}
+	else if (choice == 'N' || choice == 'n')
+	{
+		cout << "Back to main menu." << endl;
+	}
+	else
+	{
+		cout << "Invalid input. Back to main menu." << endl;
+	}
 }
 
 void mainMenu();
@@ -55,6 +140,7 @@ public:
 	string author;
 	string publisher;
 	string year;
+	// DateTime dueDate;
 	bool isAvailable;
 
 	Book()
@@ -94,7 +180,8 @@ public:
 		numBorrowers = 0;
 	}
 
-	bool isBorrrwed(string bookID, Borrower borrower)
+	// if book is available, return true
+	bool isBorrowed(string bookID, Borrower borrower)
 	{
 		for (int i = 0; i < borrower.numBorrowedBooks; i++)
 		{
@@ -106,6 +193,7 @@ public:
 		return false;
 	}
 
+	// sort Book list using Bubble Sort
 	void sortBookList()
 	{
 		int i, j;
@@ -123,6 +211,7 @@ public:
 		}
 	}
 
+	// sort Borrower list using Bubble Sort
 	void sortBorrowerList()
 	{
 		int i, j;
@@ -140,6 +229,7 @@ public:
 		}
 	}
 
+	// add book to bookList
 	void addBook(string ID, string title, string author, string publisher, string year)
 	{
 		Book book;
@@ -150,9 +240,10 @@ public:
 		book.year = year;
 		bookList[numBooks] = book;
 		numBooks++;
-		cout << "Book added" << endl;
+		// cout << "Book added" << endl;
 	}
 
+	// remove book from bookList
 	void removeBookByUser()
 	{
 		string ID;
@@ -195,19 +286,12 @@ public:
 					cout << "Book not removed" << endl;
 					return;
 				}
-
-				// for (int j = i; j < numBooks - 1; j++)
-				// {
-				// 	bookList[j] = bookList[j + 1];
-				// }
-				// numBooks--;
-				// cout << "Book removed" << endl;
-				// return;
 			}
 		}
 		cout << "Book not found or not available" << endl;
 	}
 
+	// add book to bookList by user
 	void addBookByUser()
 	{
 		string ID, title, author, publisher;
@@ -329,6 +413,7 @@ public:
 		sortBookList();
 	}
 
+	// check if borrowerID exist in borrowerList, and return the index using linear search
 	int validateBorrower(string borrowerID, int low, int high)
 	{
 		for (int i = 0; i < numBorrowers; i++)
@@ -342,6 +427,7 @@ public:
 		return -1;
 	}
 
+	// check if bookID exist in bookList, and return the index using linear search
 	int validateBook(string bookID)
 	{
 		for (int i = 0; i < numBooks; i++)
@@ -354,12 +440,13 @@ public:
 		return -1;
 	}
 
-	string randomBook(){
-		int ran = rand() % (numBooks + 1);
-		string bookID = bookList[ran].ID;
-		return bookID;
+	int randomBook()
+	{
+		int bookIndex = rand() % (numBooks + 1);
+		return bookIndex;
 	}
 
+	// displayBookList
 	void displayBooks()
 	{
 		size_t headerWidth[5] = {13, 103, 53, 53, 10};
@@ -382,6 +469,7 @@ public:
 		}
 	}
 
+	// searchBook by keywords
 	void searchBook()
 	{
 		cout << "=====================================================================================================" << endl;
@@ -392,7 +480,7 @@ public:
 		cout << "=====================================================================================================" << endl;
 		string keyword;
 		cin.ignore();
-		cout << "Enter keyword:" << endl;
+		cout << "Enter keyword: ";
 		getline(cin, keyword);
 		if (keyword.size() > 50)
 		{
@@ -422,11 +510,12 @@ public:
 				}
 				else
 				{
-					transform(title.begin(), title.end(), title.begin(), ::tolower);
-					transform(author.begin(), author.end(), author.begin(), ::tolower);
-					transform(publisher.begin(), publisher.end(), publisher.begin(), ::tolower);
-					transform(ID.begin(), ID.end(), ID.begin(), ::tolower);
-					transform(keywords[j].begin(), keywords[j].end(), keywords[j].begin(), ::tolower);
+					// convert to lowercase
+					keywords[j] = toLower(keywords[j]);
+					title = toLower(title);
+					author = toLower(author);
+					publisher = toLower(publisher);
+					ID = toLower(ID);
 				}
 
 				if (title.find(keywords[j]) != string::npos || author.find(keywords[j]) != string::npos || publisher.find(keywords[j]) != string::npos || ID.find(keywords[j]) != string::npos)
@@ -448,7 +537,8 @@ public:
 		}
 	}
 
-	void displayBookInfo(int bookIndex){
+	void displayBookInfo(int bookIndex)
+	{
 		cout << "Book details:" << endl;
 		cout << "Title: " << bookList[bookIndex].title << endl;
 		cout << "Author: " << bookList[bookIndex].author << endl;
@@ -467,7 +557,7 @@ public:
 		borrower.contactNum = contactNum;
 		borrowerList[numBorrowers] = borrower;
 		numBorrowers++;
-		cout << "Borrower added " << borrower.borrowerID << endl;
+		// cout << "Borrower added " << borrower.borrowerID << endl;
 	}
 
 	void displayBorrowers()
@@ -567,6 +657,12 @@ public:
 			getline(cin, lastName);
 			if (isExit(lastName))
 				return;
+		}
+
+		// to upper case
+		for (int i = 0; i < lastName.size(); i++)
+		{
+			lastName[i] = toupper(lastName[i]);
 		}
 
 		cout << "Enter First Name: ";
@@ -717,6 +813,7 @@ public:
 						borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
 						borrowerList[borrowerIndex].numBorrowedBooks++;
 						bookList[bookIndex].isAvailable = false;
+						// bookList[bookIndex].dueDate = getDueDate();
 						cout << "Book borrowed successfully." << endl;
 					}
 					else
@@ -808,7 +905,7 @@ public:
 				{
 					// update book availability
 					// number of books borrowed--
-					if (isBorrrwed(bookID, borrowerList[borrowerIndex]))
+					if (isBorrowed(bookID, borrowerList[borrowerIndex]))
 					{
 						borrowerList[borrowerIndex].numBorrowedBooks--;
 						bookList[bookIndex].isAvailable = true;
@@ -826,46 +923,31 @@ public:
 		return;
 	}
 
-	void randomBookRecommend(){
+	void randomBookRecommend()
+	{
 		string bookID;
 		int bookIndex;
 		char input;
 		bool valid = false;
-		bool flag1 = true;
 		cout << "Having no idea to read which book? Here is an available book recommended for you!" << endl;
-		while (flag1){
-			while (valid = false)
-			{
-				bookID = randomBook();
-				bookIndex = validateBook(bookID);
-				if (bookIndex != -1)
-				{
-					valid = true;
-					cout << "ID of Recommended book: " << bookID << endl;
-				}
-			}
-
+		while (true)
+		{
+			bookIndex = randomBook();
 			displayBookInfo(bookIndex);
-
-			bool flag2 = true;
-			while (flag2){
-				cout << "Would you like to get another book recommendation? (Y/n)" << endl;
-				cin >> input;
-				if (input != 'Y' || input != 'y' || input != 'N' || input != 'n')
-				{
-					cout << "Invalid input. Please enter again." << endl;
-				}
-				else if (input == 'N' || input == 'n'){
-					flag1 = false;
-					flag2 = false;
-				}
-				else flag2 = false;
+			cout << "Would you like to get another book recommendation? (Y/n)" << endl;
+			cin >> input;
+			if (input != 'Y' && input != 'y' && input != 'N' && input != 'n')
+			{
+				cout << "Invalid input. Please enter again." << endl;
+			}
+			else if (input == 'N' || input == 'n')
+			{
+				break;
 			}
 		}
 		cout << "Back to main menu." << endl;
 		return;
 	}
-
 };
 
 Library library;
@@ -885,7 +967,6 @@ int extractFields(string line, char fields[][101])
 	// **********
 	// Implement your code to extract fields from the line
 	// **********
-	cout << line << endl;
 	while (i <= line.length())
 	{
 		if (line[i] == '"' && line[i + 1] != '"')
@@ -933,20 +1014,17 @@ void readCSV(string filename, string type)
 	{											 // read line by line until end of file
 		numFields = extractFields(line, fields); // call function to extract fields from the line
 
-		for (int i = 0; i <= numFields; i++)
-		{											// *** display the fields of this line
-			cout << i << ": " << fields[i] << endl; // *** you should modify this code for fields processing
-		}
 		if (type == "book") // Add book
 			library.addBook(fields[0], fields[1], fields[2], fields[3], fields[4]);
 		else if (type == "borrower") // Add borrower
 			library.addBorrower(fields[0], fields[1], fields[2]);
 		countRecords++;
 	}
-	cout << countRecords << " Record(s) imported.\n";
+	// cout << countRecords << " Record(s) imported.\n";
 	inFile.close();
 }
 
+// R0 File Import Process
 void importFile()
 {
 	string filename;
@@ -960,7 +1038,7 @@ void importFile()
 			cout << "Path of book list file: ";
 			// getline(cin, filename); // Path with space is allowed
 			filename = "BookList.csv";
-			cout << "Importing book list . . . " << filename;
+			cout << "Importing book list . . . ";
 			readCSV(filename, "book");
 			cout << "Done" << endl;
 			break;
@@ -984,7 +1062,7 @@ void importFile()
 			cout << "Path of borrower list file: ";
 			// getline(cin, filename); // Path with space is allowed
 			filename = "BorrowerList.csv";
-			cout << "Importing book list . . . ";
+			cout << "Importing borrower list . . . ";
 			readCSV(filename, "borrower");
 			cout << "Done" << endl;
 			break;
@@ -1001,6 +1079,8 @@ void importFile()
 
 	library.sortBookList();
 	library.sortBorrowerList();
+
+	cout << "Welcome to Library Management System" << endl;
 }
 
 void manageBorrowers()
@@ -1163,7 +1243,7 @@ void mainMenu()
 		break;
 	case 7:
 		// Exit
-		return;
+		systemExit();
 		break;
 	default:
 		// Invalid input
