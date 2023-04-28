@@ -854,13 +854,9 @@ public:
 					// number of books borrowed++
 					if (bookList[bookIndex].isAvailable && borrowerList[borrowerIndex].numBorrowedBooks != 5)
 					{
-						// borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
-						// borrowerList[borrowerIndex].numBorrowedBooks++;
-						// bookList[bookIndex].isAvailable = false;
-						// bookList[bookIndex].dueDate = getDueDate();
 						bookIDList[numofBookentered] = bookID;
 						numofBookentered++;
-						cout << "Book borrowed successfully." << endl;
+						cout << "Book Entered successfully." << endl;
 						cout << "Number of books entered: " << numofBookentered << endl;
 						cout << numofBookentered + borrowerList[borrowerIndex].numBorrowedBooks << endl;
 						if (numofBookentered + borrowerList[borrowerIndex].numBorrowedBooks > 5)
@@ -997,14 +993,13 @@ public:
 		{
 			while (true)
 			{
-			bookIndex = randomBook();
-			if (bookList[bookIndex].isAvailable)
-			{
-			cout << "ID of the recommended book: " << bookList[bookIndex].ID << endl;
-			displayBookInfo(bookIndex);
-			break;
-			}
-			else bookIndex = randomBook();
+				bookIndex = randomBook();
+				if (bookList[bookIndex].isAvailable)
+				{
+					cout << "ID of the recommended book: " << bookList[bookIndex].ID << endl;
+					displayBookInfo(bookIndex);
+					break;
+				}
 			}
 
 			cout << "Would you like to get another book recommendation? (Y/n)" << endl;
