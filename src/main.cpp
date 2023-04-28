@@ -549,7 +549,7 @@ public:
 		return;
 	}
 
-	void addBorrower(string lastName, string firstName, string contactNum)
+	string addBorrower(string lastName, string firstName, string contactNum)
 	{
 		Borrower borrower;
 		borrower.borrowerID = "HKCC" + string(4 - to_string(numBorrowers + 1).size(), '0') + to_string(numBorrowers + 1);
@@ -559,6 +559,7 @@ public:
 		borrower.contactNum = contactNum;
 		borrowerList[numBorrowers] = borrower;
 		numBorrowers++;
+		return borrower.borrowerID;
 		// cout << "Borrower added " << borrower.borrowerID << endl;
 	}
 
@@ -694,7 +695,6 @@ public:
 		for (int i = 0; i < numofwords; i++)
 		{
 			firstNameWords[i][0] = toupper(firstNameWords[i][0]);
-			cout << firstNameWords[i] << endl;
 		}
 		firstName = "";
 		for (int i = 0; i < numofwords; i++)
@@ -703,8 +703,9 @@ public:
 			if (i != numofwords - 1)
 				firstName += " ";
 		}
-		addBorrower(lastName, firstName, contactNum);
+		string borrowerID = addBorrower(lastName, firstName, contactNum);
 		sortBorrowerList();
+		cout << "Borrower [" << borrowerID << "] added successfully" << endl;
 	}
 
 	void removeBorrowerByUser()
@@ -850,15 +851,12 @@ public:
 				}
 				else
 				{
-					// update book availability
-					// number of books borrowed++
 					if (bookList[bookIndex].isAvailable && borrowerList[borrowerIndex].numBorrowedBooks != 5)
 					{
 						bookIDList[numofBookentered] = bookID;
 						numofBookentered++;
 						cout << "Book Entered successfully." << endl;
 						cout << "Number of books entered: " << numofBookentered << endl;
-						cout << numofBookentered + borrowerList[borrowerIndex].numBorrowedBooks << endl;
 						if (numofBookentered + borrowerList[borrowerIndex].numBorrowedBooks > 5)
 						{
 							cout << "You have reached the maximum number of books you can borrow." << endl;
@@ -1030,29 +1028,33 @@ public:
 			}
 			else
 			{
-				string borrowerID;
-				cout << "Enter BorrowerID: ";
-				cin >> borrowerID;
-				if (isExit(borrowerID))
-					return;
-				if (borrowerID.size() != 8)
+				while (true)
 				{
-					cout << "Invalid Borrower ID length. Please enter again." << endl;
-				}
-				else if (borrowerID.substr(0, 4) != "HKCC")
-				{
-					cout << "Invalid Borrower ID format. Please enter again." << endl;
-				}
-				else
-				{
-					// find borrower ID
-					if ((validateBorrower(borrowerID)) == -1)
+					string borrowerID;
+					cout << "Enter BorrowerID: ";
+					cin >> borrowerID;
+					if (isExit(borrowerID))
+						return;
+					if (borrowerID.size() != 8)
 					{
-						cout << "Borrower ID not found. Please enter again." << endl;
+						cout << "Invalid Borrower ID length. Please enter again." << endl;
+					}
+					else if (borrowerID.substr(0, 4) != "HKCC")
+					{
+						cout << "Invalid Borrower ID format. Please enter again." << endl;
 					}
 					else
 					{
-						borrowBook(borrowerID, bookID);
+						// find borrower ID
+						if ((validateBorrower(borrowerID)) == -1)
+						{
+							cout << "Borrower ID not found. Please enter again." << endl;
+						}
+						else
+						{
+							borrowBook(borrowerID, bookID);
+						}
+						break;
 					}
 				}
 				return;
@@ -1148,8 +1150,8 @@ void importFile()
 		if (isImport == "Y" || isImport == "y")
 		{
 			cout << "Path of book list file: ";
-			// getline(cin, filename); // Path with space is allowed
-			filename = "BookList.csv";
+			getline(cin, filename); // Path with space is allowed
+			// filename = "BookList.csv";
 			cout << "Importing book list . . . ";
 			readCSV(filename, "book");
 			cout << "Done" << endl;
@@ -1172,8 +1174,8 @@ void importFile()
 		if (isImport == "Y" || isImport == "y")
 		{
 			cout << "Path of borrower list file: ";
-			// getline(cin, filename); // Path with space is allowed
-			filename = "BorrowerList.csv";
+			getline(cin, filename); // Path with space is allowed
+			// filename = "BorrowerList.csv";
 			cout << "Importing borrower list . . . ";
 			readCSV(filename, "borrower");
 			cout << "Done" << endl;
