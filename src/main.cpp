@@ -443,7 +443,7 @@ public:
 
 	int randomBook()
 	{
-		int bookIndex = rand() % (numBooks + 1);
+		int bookIndex = rand() % (numBooks);
 		return bookIndex;
 	}
 
@@ -789,13 +789,6 @@ public:
 
 		int borrowerIndex = validateBorrower(borrowerID, 0, numBorrowers - 1);
 
-		if (borrowerList[borrowerIndex].numBorrowedBooks == 5)
-		{
-			cout << "You have reached the maximum number of books you can borrow." << endl;
-			cout << "Please return some books before borrowing more." << endl;
-			return;
-		}
-
 		flag = true;
 		while (flag == true)
 		{
@@ -824,7 +817,7 @@ public:
 				{
 					// update book availability
 					// number of books borrowed++
-					if (bookList[bookIndex].isAvailable)
+					if (bookList[bookIndex].isAvailable && borrowerList[borrowerIndex].numBorrowedBooks != 5)
 					{
 						borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
 						borrowerList[borrowerIndex].numBorrowedBooks++;
@@ -839,9 +832,14 @@ public:
 							return;
 						}
 					}
-					else
+					else if (bookList[bookIndex].isAvailable == false)
 					{
 						cout << "This book has already been borrowed." << endl;
+					}
+					else
+					{
+						cout << "You have reached the maximum number of books you can borrow." << endl;
+						cout << "Please return some books before borrowing more." << endl;
 					}
 				}
 			}
@@ -894,12 +892,6 @@ public:
 
 		int borrowerIndex = validateBorrower(borrowerID, 0, numBorrowers - 1);
 
-		if (borrowerList[borrowerIndex].numBorrowedBooks == 0)
-		{
-			cout << "You have not borrowed any books." << endl;
-			return;
-		}
-
 		flag = true;
 		while (flag == true)
 		{
@@ -928,15 +920,20 @@ public:
 				{
 					// update book availability
 					// number of books borrowed--
-					if (isBorrowed(bookID, borrowerList[borrowerIndex]))
+					if (isBorrowed(bookID, borrowerList[borrowerIndex]) && borrowerList[borrowerIndex].numBorrowedBooks != 0)
 					{
 						borrowerList[borrowerIndex].numBorrowedBooks--;
 						bookList[bookIndex].isAvailable = true;
 						cout << "Book returned successfully." << endl;
 					}
-					else
+					else if (isBorrowed(bookID, borrowerList[borrowerIndex]) == false)
 					{
 						cout << "You have not borrowed this book." << endl;
+					}
+					else
+					{
+						cout << "You have not borrowed any books." << endl;
+						return;
 					}
 				}
 			}
@@ -951,12 +948,21 @@ public:
 		string bookID;
 		int bookIndex;
 		char input;
-		bool valid = false;
 		cout << "Having no idea to read which book? Here is an available book recommended for you!" << endl;
 		while (true)
 		{
+			while (true)
+			{
 			bookIndex = randomBook();
+			if (bookList[bookIndex].isAvailable)
+			{
+			cout << "ID of the recommended book: " << bookList[bookIndex].ID << endl;
 			displayBookInfo(bookIndex);
+			break;
+			}
+			else bookIndex = randomBook();
+			}
+
 			cout << "Would you like to get another book recommendation? (Y/n)" << endl;
 			cin >> input;
 			if (input != 'Y' && input != 'y' && input != 'N' && input != 'n')
@@ -972,7 +978,6 @@ public:
 		return;
 	}
 };
-
 Library library;
 
 int extractFields(string line, char fields[][101])
