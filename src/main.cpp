@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <fstream> // for file input/output
 #include <string>
-#include <algorithm>
 #include <sstream>
 #include <cstdlib>
 using namespace std;
@@ -68,49 +67,6 @@ string toUpper(string str)
 	return str;
 }
 
-// class DateTime
-// {
-// public:
-// 	void printTime()
-// 	{
-// 		cout << setfill('0') << setw(2) << hour << ":" << setw(2) << minute << ":" << setw(2) << second << " " << setw(2) << day << "/" << setw(2) << month << "/" << setw(4) << year << endl;
-// 	}
-// 	void setTimeNow()
-// 	{
-// 		// time(0) get Unix Time (seconds since 1 Jan 1970)
-// 		// tm is a structure that contains the time components
-// 		// localtime() convert Unix Time to local Time Zone
-// 		time_t now = time(0);
-// 		tm *ltm = localtime(&now);
-// 		hour = ltm->tm_hour;
-// 	}
-// 	void getDueDay()
-// 	{
-// 		hour
-// 	}
-
-// private:
-// 	int hour, minute, second, day, month, year;
-// };
-
-// DateTime getDueDate()
-// {
-// 	DateTime dueDate;
-// 	dueDate.setTimeNow();
-// 	dueDate.day += 7;
-// 	if (dueDate.day > 30)
-// 	{
-// 		dueDate.day -= 30;
-// 		dueDate.month++;
-// 		if (dueDate.month > 12)
-// 		{
-// 			dueDate.month -= 12;
-// 			dueDate.year++;
-// 		}
-// 	}
-// 	return dueDate;
-// }
-
 void systemExit()
 {
 	char choice;
@@ -140,7 +96,6 @@ public:
 	string author;
 	string publisher;
 	string year;
-	// DateTime dueDate;
 	bool isAvailable;
 
 	Book()
@@ -411,7 +366,7 @@ public:
 		}
 		addBook(ID, title, author, publisher, to_string(year));
 		sortBookList();
-		cout << "Book added" << endl;
+		cout << "Book [" << ID << "] added" << endl;
 	}
 
 	// check if borrowerID exist in borrowerList, and return the index using linear search
@@ -443,6 +398,10 @@ public:
 
 	int randomBook()
 	{
+		if (numBooks == 0)
+		{
+			return -1;
+		}
 		int bookIndex = rand() % (numBooks);
 		return bookIndex;
 	}
@@ -992,6 +951,13 @@ public:
 			while (true)
 			{
 				bookIndex = randomBook();
+
+				if (bookIndex == -1)
+				{
+					cout << "No available book in the library." << endl;
+					return;
+				}
+
 				if (bookList[bookIndex].isAvailable)
 				{
 					cout << "ID of the recommended book: " << bookList[bookIndex].ID << endl;
@@ -1308,6 +1274,15 @@ void membersList()
 	return;
 }
 
+void usefulFeatures()
+{
+	cout << "******************************************" << endl;
+	cout << "Useful features added:" << endl;
+	cout << "1. Random available book recommendation" << endl;
+	cout << "- Recommend a random available book to the user." << endl;
+	cout << "- User can borrow the book directly" << endl;
+}
+
 void mainMenu()
 {
 	int option;
@@ -1316,11 +1291,12 @@ void mainMenu()
 	cout << "[2] Manage borrowers" << endl;
 	cout << "[3] Borrow book(s)" << endl;
 	cout << "[4] Return book(s)" << endl;
-	cout << "[5] Random available book recommendation" << endl;
+	cout << "[5] Useful feature(s) added" << endl;
 	cout << "[6] Member List" << endl;
-	cout << "[7] Exit" << endl;
+	cout << "[7] Random available book recommendation" << endl;
+	cout << "[8] Exit" << endl;
 	cout << "*****************************************" << endl;
-	cout << "Option (1 - 7): ";
+	cout << "Option (1 - 8): ";
 
 	cin >> option;
 	if (cin.fail())
@@ -1349,13 +1325,17 @@ void mainMenu()
 		break;
 	case 5:
 		// Useful feature(s) added
-		library.randomBookRecommend();
+		usefulFeatures();
 		break;
 	case 6:
 		// Member List
 		membersList();
 		break;
 	case 7:
+		// Random available book recommendation
+		library.randomBookRecommend();
+		break;
+	case 8:
 		// Exit
 		systemExit();
 		break;
@@ -1369,13 +1349,7 @@ void mainMenu()
 
 int main()
 {
-	string filename;
 	importFile();
 	mainMenu();
-
-	// cout << "Input path to CSV file: ";
-	// getline(cin, filename); // Path with space is allowed
-	// readCSV(filename);
-
 	return 0;
 }
