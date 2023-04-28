@@ -760,10 +760,10 @@ public:
 		cout << "If the quota is used up, you cannot borrow more books until some books have been returned." << endl;
 		cout << "*******************************************************************************************" << endl;
 
+		cin.ignore(1);
 		while (flag == true)
 		{
 			cout << "Enter Borrower ID: ";
-			cin.ignore(1);
 			getline(cin, borrowerID);
 			if (isExit(borrowerID))
 				return;
