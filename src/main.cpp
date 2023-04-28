@@ -415,7 +415,7 @@ public:
 	}
 
 	// check if borrowerID exist in borrowerList, and return the index using linear search
-	int validateBorrower(string borrowerID, int low, int high)
+	int validateBorrower(string borrowerID)
 	{
 		for (int i = 0; i < numBorrowers; i++)
 		{
@@ -541,6 +541,7 @@ public:
 	void displayBookInfo(int bookIndex)
 	{
 		cout << "Book details:" << endl;
+		cout << "ID: " << bookList[bookIndex].ID << endl;
 		cout << "Title: " << bookList[bookIndex].title << endl;
 		cout << "Author: " << bookList[bookIndex].author << endl;
 		cout << "Publisher: " << bookList[bookIndex].publisher << endl;
@@ -592,7 +593,7 @@ public:
 			return;
 		}
 
-		int index = validateBorrower(borrowerID, 0, numBorrowers - 1);
+		int index = validateBorrower(borrowerID);
 
 		if (index == -1)
 		{
@@ -601,7 +602,7 @@ public:
 		}
 		else
 		{
-			size_t headerWidth[4] = {11, 43, 20, 20};
+			size_t headerWidth[4] = {11, 103, 20, 20};
 			cout << left << setw(headerWidth[0]) << "borrowerID"
 				 << setw(headerWidth[1]) << "Name"
 				 << setw(headerWidth[2]) << "Contact Number"
@@ -711,7 +712,7 @@ public:
 		string borrowerID;
 		cout << "Enter borrower ID: ";
 		cin >> borrowerID;
-		int index = validateBorrower(borrowerID, 0, numBorrowers - 1);
+		int index = validateBorrower(borrowerID);
 		if (index == -1 || borrowerList[index].numBorrowedBooks > 0)
 			cout << "Borrower not found or has books borrowed" << endl;
 		else
@@ -746,11 +747,44 @@ public:
 		}
 	}
 
+	void borrowBook(string borrowerID, string bookID)
+	{
+		int bookIndex = validateBook(bookID);
+		int borrowerIndex = validateBorrower(borrowerID);
+
+		if (bookIndex == -1)
+		{
+			cout << "Book not found" << endl;
+			return;
+		}
+		if (borrowerIndex == -1)
+		{
+			cout << "Borrower not found" << endl;
+			return;
+		}
+		if (!bookList[bookIndex].isAvailable)
+		{
+			cout << "Book is not available" << endl;
+			return;
+		}
+		if (borrowerList[borrowerIndex].numBorrowedBooks >= 5)
+		{
+			cout << "Borrower has borrowed 5 books" << endl;
+			return;
+		}
+
+		borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
+		borrowerList[borrowerIndex].numBorrowedBooks++;
+		cout << "Book [" << bookList[bookIndex].title << "] borrowed successfully." << endl;
+	}
+
 	void borrowBooks()
 	{
 		string borrowerID;
 		string valid = "HKCC";
 		string bookID;
+		string bookIDList[5];
+		int numofBookentered = 0;
 		bool flag = true;
 		cout << "************************************ Borrow Book(s) ***************************************" << endl;
 		cout << "To borrow book(s), you should provide the following details: " << endl;
@@ -758,6 +792,7 @@ public:
 		cout << "Book ID" << endl;
 		cout << "You can borrow at most 5 books." << endl;
 		cout << "If the quota is used up, you cannot borrow more books until some books have been returned." << endl;
+		cout << "No books will be borrowed if your remaining quota is smaller than the number of book IDs" << endl;
 		cout << "*******************************************************************************************" << endl;
 
 		cin.ignore(1);
@@ -778,7 +813,7 @@ public:
 			else
 			{
 				// find borrower ID
-				if ((validateBorrower(borrowerID, 0, numBorrowers - 1)) == -1)
+				if ((validateBorrower(borrowerID)) == -1)
 				{
 					cout << "Borrower ID not found. Please enter again." << endl;
 				}
@@ -787,7 +822,7 @@ public:
 			}
 		}
 
-		int borrowerIndex = validateBorrower(borrowerID, 0, numBorrowers - 1);
+		int borrowerIndex = validateBorrower(borrowerID);
 
 		if (borrowerList[borrowerIndex].numBorrowedBooks == 5)
 		{
@@ -826,16 +861,20 @@ public:
 					// number of books borrowed++
 					if (bookList[bookIndex].isAvailable)
 					{
-						borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
-						borrowerList[borrowerIndex].numBorrowedBooks++;
-						bookList[bookIndex].isAvailable = false;
+						// borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
+						// borrowerList[borrowerIndex].numBorrowedBooks++;
+						// bookList[bookIndex].isAvailable = false;
 						// bookList[bookIndex].dueDate = getDueDate();
+						bookIDList[numofBookentered] = bookID;
+						numofBookentered++;
 						cout << "Book borrowed successfully." << endl;
-						cout << "Number of books borrowed: " << borrowerList[borrowerIndex].numBorrowedBooks << endl;
-						if (borrowerList[borrowerIndex].numBorrowedBooks == 5)
+						cout << "Number of books entered: " << numofBookentered << endl;
+						cout << numofBookentered + borrowerList[borrowerIndex].numBorrowedBooks << endl;
+						if (numofBookentered + borrowerList[borrowerIndex].numBorrowedBooks > 5)
 						{
 							cout << "You have reached the maximum number of books you can borrow." << endl;
 							cout << "Please return some books before borrowing more." << endl;
+							cout << "No books will be borrowed if your remaining quota is smaller than the number of book IDs" << endl;
 							return;
 						}
 					}
@@ -845,6 +884,11 @@ public:
 					}
 				}
 			}
+		}
+
+		for (int i = 0; i < numofBookentered; i++)
+		{
+			borrowBook(borrowerID, bookIDList[i]);
 		}
 
 		cout << "End of borrowing process. Back to main menu." << endl;
@@ -883,7 +927,7 @@ public:
 			else
 			{
 				// find borrower ID
-				if ((validateBorrower(borrowerID, 0, numBorrowers - 1)) == -1)
+				if ((validateBorrower(borrowerID)) == -1)
 				{
 					cout << "Borrower ID not found. Please enter again." << endl;
 				}
@@ -892,7 +936,7 @@ public:
 			}
 		}
 
-		int borrowerIndex = validateBorrower(borrowerID, 0, numBorrowers - 1);
+		int borrowerIndex = validateBorrower(borrowerID);
 
 		if (borrowerList[borrowerIndex].numBorrowedBooks == 0)
 		{
@@ -965,7 +1009,52 @@ public:
 			}
 			else if (input == 'N' || input == 'n')
 			{
+				bookID = bookList[bookIndex].ID;
 				break;
+			}
+		}
+
+		while (true)
+		{
+			cout << "Would you like to borrow this book? (Y/n)" << endl;
+			cin >> input;
+			if (input != 'Y' && input != 'y' && input != 'N' && input != 'n')
+			{
+				cout << "Invalid input. Please enter again." << endl;
+			}
+			else if (input == 'N' || input == 'n')
+			{
+				cout << "Back to main menu." << endl;
+				return;
+			}
+			else
+			{
+				string borrowerID;
+				cout << "Enter BorrowerID: ";
+				cin >> borrowerID;
+				if (isExit(borrowerID))
+					return;
+				if (borrowerID.size() != 8)
+				{
+					cout << "Invalid Borrower ID length. Please enter again." << endl;
+				}
+				else if (borrowerID.substr(0, 4) != "HKCC")
+				{
+					cout << "Invalid Borrower ID format. Please enter again." << endl;
+				}
+				else
+				{
+					// find borrower ID
+					if ((validateBorrower(borrowerID)) == -1)
+					{
+						cout << "Borrower ID not found. Please enter again." << endl;
+					}
+					else
+					{
+						borrowBook(borrowerID, bookID);
+					}
+				}
+				return;
 			}
 		}
 		cout << "Back to main menu." << endl;
