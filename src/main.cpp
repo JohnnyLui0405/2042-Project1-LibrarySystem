@@ -411,6 +411,7 @@ public:
 		}
 		addBook(ID, title, author, publisher, to_string(year));
 		sortBookList();
+		cout << "Book added" << endl;
 	}
 
 	// check if borrowerID exist in borrowerList, and return the index using linear search
@@ -686,6 +687,21 @@ public:
 				return;
 		}
 
+		lastName = toUpper(lastName);
+		int numofwords = 0;
+		string *firstNameWords = split(firstName, ' ', &numofwords);
+		for (int i = 0; i < numofwords; i++)
+		{
+			firstNameWords[i][0] = toupper(firstNameWords[i][0]);
+			cout << firstNameWords[i] << endl;
+		}
+		firstName = "";
+		for (int i = 0; i < numofwords; i++)
+		{
+			firstName += firstNameWords[i];
+			if (i != numofwords - 1)
+				firstName += " ";
+		}
 		addBorrower(lastName, firstName, contactNum);
 		sortBorrowerList();
 	}
@@ -815,6 +831,13 @@ public:
 						bookList[bookIndex].isAvailable = false;
 						// bookList[bookIndex].dueDate = getDueDate();
 						cout << "Book borrowed successfully." << endl;
+						cout << "Number of books borrowed: " << borrowerList[borrowerIndex].numBorrowedBooks << endl;
+						if (borrowerList[borrowerIndex].numBorrowedBooks == 5)
+						{
+							cout << "You have reached the maximum number of books you can borrow." << endl;
+							cout << "Please return some books before borrowing more." << endl;
+							return;
+						}
 					}
 					else
 					{
@@ -842,10 +865,10 @@ public:
 		cout << "If the quota is used up, you cannot borrow more books until some books have been returned." << endl;
 		cout << "*******************************************************************************************" << endl;
 
+		cin.ignore(1);
 		while (flag == true)
 		{
 			cout << "Enter Borrower ID: ";
-			cin.ignore(1);
 			getline(cin, borrowerID);
 			if (isExit(borrowerID))
 				return;
