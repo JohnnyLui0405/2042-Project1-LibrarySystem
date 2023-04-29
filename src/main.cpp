@@ -6,7 +6,7 @@
 #include <cstdlib>
 using namespace std;
 
-bool isDebug = true;
+bool isDebug = false;
 // Common functions
 string *split(string str, char del, int *numKeywords)
 {
@@ -98,10 +98,12 @@ public:
 	string publisher;
 	string year;
 	bool isAvailable;
+	int totalBorrowedCount;
 
 	Book()
 	{
 		isAvailable = true;
+		totalBorrowedCount = 0;
 	}
 };
 class Borrower
@@ -114,11 +116,13 @@ public:
 	string contactNum;
 	Book *borrowedBooks;
 	int numBorrowedBooks;
+	int totalBorrowedCount;
 
 	Borrower()
 	{
 		numBorrowedBooks = 0;
 		borrowedBooks = new Book[5];
+		totalBorrowedCount = 0;
 	}
 };
 
@@ -137,16 +141,16 @@ public:
 	}
 
 	// if book is available, return true
-	bool isBorrowed(string bookID, Borrower borrower)
+	int isBorrowed(string bookID, Borrower borrower)
 	{
 		for (int i = 0; i < borrower.numBorrowedBooks; i++)
 		{
 			if (borrower.borrowedBooks[i].ID == bookID)
 			{
-				return true;
+				return i;
 			}
 		}
-		return false;
+		return -1;
 	}
 
 	// sort Book list using Bubble Sort
@@ -181,6 +185,89 @@ public:
 					borrowerList[j] = borrowerList[j + 1];
 					borrowerList[j + 1] = temp;
 				}
+			}
+		}
+	}
+
+	// display borrower with total borrowed books > 0
+	void displayBorrowerLeaderboard()
+	{
+		Borrower tempBorrowerList[500];
+		int tempNumBorrowers = 0;
+		for (int i = 0; i < numBorrowers; i++)
+		{
+			if (borrowerList[i].totalBorrowedCount > 0)
+			{
+				tempBorrowerList[i] = borrowerList[i];
+				tempNumBorrowers++;
+			}
+		}
+
+		int i, j;
+		for (i = 0; i < numBorrowers - 1; i++)
+		{
+			for (j = 0; j < numBorrowers - i - 1; j++)
+			{
+				if (tempBorrowerList[j].totalBorrowedCount < tempBorrowerList[j + 1].totalBorrowedCount)
+				{
+					Borrower temp = tempBorrowerList[j];
+					tempBorrowerList[j] = tempBorrowerList[j + 1];
+					tempBorrowerList[j + 1] = temp;
+				}
+			}
+		}
+
+		cout << left << setw(5) << "No." << setw(10) << "ID" << setw(40) << "Name" << setw(10) << "Borrowed Count" << endl;
+		if (tempNumBorrowers == 0)
+		{
+			cout << "No borrow records found." << endl;
+		}
+		else
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				cout << left << setw(5) << to_string(i + 1) + ". " << setw(10) << tempBorrowerList[i].borrowerID << setw(40) << tempBorrowerList[i].lastName + " " + tempBorrowerList[i].firstName << setw(10) << tempBorrowerList[i].totalBorrowedCount << endl;
+			}
+		}
+	}
+
+	void displayBookLeaderboard()
+	{
+		Book tempBookList[1000];
+		int tempNumBooks = 0;
+		for (int i = 0; i < numBooks; i++)
+		{
+			if (bookList[i].totalBorrowedCount > 0)
+			{
+				tempBookList[i] = bookList[i];
+				tempNumBooks++;
+			}
+		}
+
+		int i, j;
+		for (i = 0; i < numBooks - 1; i++)
+		{
+			for (j = 0; j < numBooks - i - 1; j++)
+			{
+				if (tempBookList[j].totalBorrowedCount < tempBookList[j + 1].totalBorrowedCount)
+				{
+					Book temp = tempBookList[j];
+					tempBookList[j] = tempBookList[j + 1];
+					tempBookList[j + 1] = temp;
+				}
+			}
+		}
+
+		cout << left << setw(5) << "No." << setw(10) << "ID" << setw(100) << "Title" << setw(10) << "Borrowed Count" << endl;
+		if (tempNumBooks == 0)
+		{
+			cout << "No borrow records found." << endl;
+		}
+		else
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				cout << left << setw(5) << to_string(i + 1) + ". " << setw(10) << tempBookList[i].ID << setw(100) << tempBookList[i].title << setw(10) << tempBookList[i].totalBorrowedCount << endl;
 			}
 		}
 	}
@@ -731,6 +818,8 @@ public:
 
 		borrowerList[borrowerIndex].borrowedBooks[borrowerList[borrowerIndex].numBorrowedBooks] = bookList[bookIndex];
 		borrowerList[borrowerIndex].numBorrowedBooks++;
+		borrowerList[borrowerIndex].totalBorrowedCount++;
+		bookList[bookIndex].totalBorrowedCount++;
 		cout << "Book [" << bookList[bookIndex].title << "] borrowed successfully." << endl;
 	}
 
@@ -779,6 +868,7 @@ public:
 		}
 
 		int borrowerIndex = validateBorrower(borrowerID);
+		cout << "Quota Remaining: " << 5 - borrowerList[borrowerIndex].numBorrowedBooks << endl;
 
 		flag = true;
 		while (flag == true)
@@ -913,9 +1003,10 @@ public:
 				{
 					// update book availability
 					// number of books borrowed--
-					if (isBorrowed(bookID, borrowerList[borrowerIndex]) && borrowerList[borrowerIndex].numBorrowedBooks != 0)
+					int borrowedBookIndex = isBorrowed(bookID, borrowerList[borrowerIndex]);
+					if (borrowedBookIndex != -1 && borrowerList[borrowerIndex].numBorrowedBooks != 0)
 					{
-						for (int i = 0; i < borrowerList[borrowerIndex].numBorrowedBooks - 1; i++)
+						for (int i = borrowedBookIndex; i < borrowerList[borrowerIndex].numBorrowedBooks - 1; i++)
 						{
 							borrowerList[borrowerIndex].borrowedBooks[i] = borrowerList[borrowerIndex].borrowedBooks[i + 1];
 						}
@@ -1288,6 +1379,48 @@ void usefulFeatures()
 	cout << "1. Random available book recommendation" << endl;
 	cout << "- Recommend a random available book to the user." << endl;
 	cout << "- User can borrow the book directly" << endl;
+	cout << "2. Leaderboard" << endl;
+	cout << "- Display the top 10 borrowers and books" << endl;
+	cout << "******************************************" << endl;
+	cout << "\nEnd of display. Back to main menu.\n";
+}
+
+void leaderboardMenu()
+{
+	int option;
+	cout << "*** Leaderboard ***" << endl;
+	cout << "[1] Borrower leaderboard" << endl;
+	cout << "[2] Book leaderboard" << endl;
+	cout << "[3] Back" << endl;
+	cout << "*******************" << endl;
+	cout << "Option (1 - 3): ";
+
+	cin >> option;
+	if (cin.fail())
+	{						   // check whether last input was failed
+		cin.clear();		   // Reset the input error status to no error
+		cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+							   // or reached the end of line.
+	}
+	switch (option)
+	{
+	case 1:
+		// borrower leaderboard
+		library.displayBorrowerLeaderboard();
+		break;
+	case 2:
+		// book leaderboard
+		library.displayBookLeaderboard();
+		break;
+	case 3:
+		// Back
+		return;
+		break;
+	default:
+		cout << "Invalid input" << endl;
+		break;
+	}
+	leaderboardMenu();
 }
 
 void mainMenu()
@@ -1301,7 +1434,8 @@ void mainMenu()
 	cout << "[5] Useful feature(s) added" << endl;
 	cout << "[6] Member List" << endl;
 	cout << "[7] Random available book recommendation" << endl;
-	cout << "[8] Exit" << endl;
+	cout << "[8] Leaderboard" << endl;
+	cout << "[9] Exit" << endl;
 	cout << "*****************************************" << endl;
 	cout << "Option (1 - 8): ";
 
@@ -1343,6 +1477,10 @@ void mainMenu()
 		library.randomBookRecommend();
 		break;
 	case 8:
+		// Leaderboard
+		leaderboardMenu();
+		break;
+	case 9:
 		// Exit
 		systemExit();
 		break;
