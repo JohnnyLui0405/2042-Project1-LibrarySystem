@@ -919,6 +919,10 @@ public:
 					// number of books borrowed--
 					if (isBorrowed(bookID, borrowerList[borrowerIndex]) && borrowerList[borrowerIndex].numBorrowedBooks != 0)
 					{
+						for (int i = 0; i < borrowerList[borrowerIndex].numBorrowedBooks - 1; i++)
+						{
+							borrowerList[borrowerIndex].borrowedBooks[i] = borrowerList[borrowerIndex].borrowedBooks[i + 1];
+						}
 						borrowerList[borrowerIndex].numBorrowedBooks--;
 						bookList[bookIndex].isAvailable = true;
 						cout << "Book returned successfully." << endl;
@@ -1116,8 +1120,8 @@ void importFile()
 		if (isImport == "Y" || isImport == "y")
 		{
 			cout << "Path of book list file: ";
-			getline(cin, filename); // Path with space is allowed
-			// filename = "BookList.csv";
+			// getline(cin, filename); // Path with space is allowed
+			filename = "BookList.csv";
 			cout << "Importing book list . . . ";
 			readCSV(filename, "book");
 			cout << "Done" << endl;
@@ -1140,8 +1144,8 @@ void importFile()
 		if (isImport == "Y" || isImport == "y")
 		{
 			cout << "Path of borrower list file: ";
-			getline(cin, filename); // Path with space is allowed
-			// filename = "BorrowerList.csv";
+			// getline(cin, filename); // Path with space is allowed
+			filename = "BorrowerList.csv";
 			cout << "Importing borrower list . . . ";
 			readCSV(filename, "borrower");
 			cout << "Done" << endl;
