@@ -6,6 +6,7 @@
 #include <cstdlib>
 using namespace std;
 
+bool isDebug = true;
 // Common functions
 string *split(string str, char del, int *numKeywords)
 {
@@ -722,11 +723,6 @@ public:
 			cout << "Borrower not found" << endl;
 			return;
 		}
-		if (!bookList[bookIndex].isAvailable)
-		{
-			cout << "Book is not available" << endl;
-			return;
-		}
 		if (borrowerList[borrowerIndex].numBorrowedBooks >= 5)
 		{
 			cout << "Borrower has borrowed 5 books" << endl;
@@ -810,28 +806,28 @@ public:
 				}
 				else
 				{
-					if (bookList[bookIndex].isAvailable && borrowerList[borrowerIndex].numBorrowedBooks != 5)
+					if (borrowerList[borrowerIndex].numBorrowedBooks == 5)
 					{
-						bookIDList[numofBookentered] = bookID;
-						numofBookentered++;
-						cout << "Book Entered successfully." << endl;
-						cout << "Number of books entered: " << numofBookentered << endl;
-						if (numofBookentered + borrowerList[borrowerIndex].numBorrowedBooks > 5)
+						cout << "You have reached the maximum number of books you can borrow." << endl;
+						cout << "Please return some books before borrowing more." << endl;
+						cout << "No books will be borrowed if your remaining quota is smaller than the number of book IDs" << endl;
+						for (int i = 0; i < numofBookentered; i++)
 						{
-							cout << "You have reached the maximum number of books you can borrow." << endl;
-							cout << "Please return some books before borrowing more." << endl;
-							cout << "No books will be borrowed if your remaining quota is smaller than the number of book IDs" << endl;
-							return;
+							bookList[validateBook(bookIDList[i])].isAvailable = true;
 						}
+						return;
 					}
-					else if (bookList[bookIndex].isAvailable == false)
+					else if (!bookList[bookIndex].isAvailable)
 					{
 						cout << "This book has already been borrowed." << endl;
 					}
 					else
 					{
-						cout << "You have reached the maximum number of books you can borrow." << endl;
-						cout << "Please return some books before borrowing more." << endl;
+						bookIDList[numofBookentered] = bookID;
+						numofBookentered++;
+						bookList[bookIndex].isAvailable = false;
+						cout << "Book Entered successfully." << endl;
+						cout << "Number of books entered: " << numofBookentered << endl;
 					}
 				}
 			}
@@ -1122,7 +1118,12 @@ void importFile()
 			cout << "Path of book list file: ";
 			// getline(cin, filename); // Path with space is allowed
 			filename = "BookList.csv";
-			cout << "Importing book list . . . ";
+			if (isDebug)
+				filename = "BookList.csv";
+			else
+				getline(cin, filename);
+			cout
+				<< "Importing book list . . . ";
 			readCSV(filename, "book");
 			cout << "Done" << endl;
 			break;
@@ -1144,8 +1145,10 @@ void importFile()
 		if (isImport == "Y" || isImport == "y")
 		{
 			cout << "Path of borrower list file: ";
-			// getline(cin, filename); // Path with space is allowed
-			filename = "BorrowerList.csv";
+			if (isDebug)
+				filename = "BorrowerList.csv";
+			else
+				getline(cin, filename);
 			cout << "Importing borrower list . . . ";
 			readCSV(filename, "borrower");
 			cout << "Done" << endl;
