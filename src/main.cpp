@@ -1220,6 +1220,7 @@ void importFile()
         }
         else if (isImport == "N" || isImport == "n")
         {
+            cout << "No book list is imported" << endl;
             break;
         }
         else
@@ -1246,6 +1247,7 @@ void importFile()
         }
         else if (isImport == "N" || isImport == "n")
         {
+            cout << "No borrower list is imported" << endl;
             break;
         }
         else
