@@ -179,7 +179,7 @@ public:
         {
             for (j = 0; j < numBorrowers - i - 1; j++)
             {
-                if (borrowerList[j].lastName > borrowerList[j + 1].lastName)
+                if (borrowerList[j].fullName > borrowerList[j + 1].fullName)
                 {
                     Borrower temp = borrowerList[j];
                     borrowerList[j] = borrowerList[j + 1];
@@ -612,7 +612,6 @@ public:
 
     void displayBorrowers()
     {
-        cout << "sorting" << endl;
         size_t headerWidth[4] = {11, 43, 20, 20};
         cout << left << setw(headerWidth[0]) << "borrowerID"
              << setw(headerWidth[1]) << "Name"
